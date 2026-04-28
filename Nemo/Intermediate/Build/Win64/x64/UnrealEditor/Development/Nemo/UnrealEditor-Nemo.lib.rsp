@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-Nemo.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Unreal\Unreal_Team25_FindingNemo\Nemo\Intermediate\Build\Win64\x64\NemoEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"C:\Unreal\Unreal_Team25_FindingNemo\Nemo\Intermediate\Build\Win64\x64\UnrealEditor\Development\Nemo\Nemo.cpp.obj"
+"C:\Unreal\Unreal_Team25_FindingNemo\Nemo\Intermediate\Build\Win64\x64\UnrealEditor\Development\Nemo\PerModuleInline.gen.cpp.obj"
+"C:\Unreal\Unreal_Team25_FindingNemo\Nemo\Intermediate\Build\Win64\x64\UnrealEditor\Development\Nemo\Default.rc2.res"
+/OUT:"C:\Unreal\Unreal_Team25_FindingNemo\Nemo\Intermediate\Build\Win64\x64\UnrealEditor\Development\Nemo\UnrealEditor-Nemo.lib"

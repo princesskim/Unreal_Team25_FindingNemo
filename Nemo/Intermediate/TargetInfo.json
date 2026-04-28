@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Nemo",
+			"Path": "..\\Source\\Nemo.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "NemoEditor",
+			"Path": "..\\Source\\NemoEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

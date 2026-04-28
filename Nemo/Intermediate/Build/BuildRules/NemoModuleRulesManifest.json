@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Unreal\\Unreal_Team25_FindingNemo\\Nemo\\Source\\Nemo\\Nemo.Build.cs",
+		"C:\\Unreal\\Unreal_Team25_FindingNemo\\Nemo\\Source\\Nemo.Target.cs",
+		"C:\\Unreal\\Unreal_Team25_FindingNemo\\Nemo\\Source\\NemoEditor.Target.cs"
+	],
+	"EngineVersion": "5.5.4"
+}
