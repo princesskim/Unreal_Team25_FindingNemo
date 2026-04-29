@@ -1,7 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SpikeTrapItem.h"
+#include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ASpikeTrapItem::ASpikeTrapItem()
 {
@@ -12,8 +11,20 @@ ASpikeTrapItem::ASpikeTrapItem()
 
 void ASpikeTrapItem::ActivateItem(AActor* Activator)
 {
-}
+	TArray<AActor*> OverlappingActors;
+	SpikeCollision->GetOverlappingActors(OverlappingActors);
 
-void ASpikeTrapItem::Spike()
-{
+	for (AActor* Actor : OverlappingActors)
+	{
+		if (Actor && Actor->ActorHasTag("Player"))
+		{
+			UGameplayStatics::ApplyDamage(
+				Actor,
+				SpikeDamage,
+				nullptr,
+				this,
+				UDamageType::StaticClass()
+			);
+		}
+	}
 }

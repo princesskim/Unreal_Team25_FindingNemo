@@ -18,6 +18,4 @@ public:
 	int32 SpikeDamage;
 
 	virtual void ActivateItem(AActor* Activator) override;
-	void Spike();
-	
 };
