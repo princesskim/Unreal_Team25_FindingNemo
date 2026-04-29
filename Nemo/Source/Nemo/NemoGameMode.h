@@ -1,0 +1,19 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/GameMode.h"
+#include "NemoGameMode.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class NEMO_API ANemoGameMode : public AGameMode
+{
+	GENERATED_BODY()
+	
+	void StartLevel();
+	void EndLevel();
+};

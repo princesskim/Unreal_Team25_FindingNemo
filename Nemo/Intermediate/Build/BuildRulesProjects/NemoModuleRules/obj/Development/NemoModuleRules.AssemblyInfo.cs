@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NemoModuleRules")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Development")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d32e13ff665b2b5dca6f407f58b200bf60d4cb91")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06cbca6a0859b325ef5340f2017e8492993afc9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("NemoModuleRules")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NemoModuleRules")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
