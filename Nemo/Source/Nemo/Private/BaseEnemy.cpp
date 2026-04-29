@@ -5,13 +5,23 @@
 #include "Components/DecalComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "BaseEnemyAI.h"
 
 ABaseEnemy::ABaseEnemy()
 {
+	// ========= AI 컨트롤러 자동 연결 =========                                               // 둘 다 APawn에 이미 선언된 멤버 변수임
+	AIControllerClass = ABaseEnemyAI::StaticClass();										// 이 Pawn이 생성되면 엔진이 자동으로 ABaseEnemyAI 생성
+																							// 그리고 Pawn을 Possess
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;									// AI Controller가 언제 자동으로 붙을지 (옵션 4 선택)
+																								// 옵션 1.Disabled : 직접 Possess 해야 함
+																								// 옵션 2.PlacedInWorld : 레벨에 “배치된 경우만” AI 생성
+																								// 옵션 3.Spawned : 런타임 Spawn된 경우만 AI 생성
+																								// 옵션 4.PlacedInWorldOrSpawned : 레벨에 있든, 스폰되든 무조건 AI 붙이기
+	
 	// ============== 상태 초기화 ==============
 	CurrentState = EEnemyState::Idle;
 	
-	// ============= 파라미터 초기화 =============
+	// ============ 파라미터 초기화 ============
 	TelegraphDecalRadius = 100.f;
 	TelegraphDuration = 1.5f;
 	
