@@ -11,4 +11,14 @@ class NEMO_API ABossShark : public ABaseEnemy
 {
 	GENERATED_BODY()
 	
+public:
+	ABossShark();
+	
+protected:
+	virtual void EnterChargingState() override;
+	virtual void CheckChargeOverlap() override;	
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="SharkBoss")
+	float ChargeRadius;   // 광역 돌진 범위
 };
