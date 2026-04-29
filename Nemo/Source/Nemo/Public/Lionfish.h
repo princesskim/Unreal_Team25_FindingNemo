@@ -11,4 +11,9 @@ class NEMO_API ALionfish : public ABaseEnemy
 {
 	GENERATED_BODY()
 	
+public:
+	ALionfish();
+	
+protected:
+	virtual void EnterChargingState() override;
 };

@@ -36,6 +36,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Enemy")
 	virtual void EnterChargingState();									// ALionfish-직선 돌진, ASharkBoss-광역 돌진
+																		// 오버라이드하여 돌진 방향과 스피드를 지정
 
 	UFUNCTION(BlueprintCallable, Category="Enemy")
 	void EnterStunnedState(float InStunDuration);
@@ -62,8 +63,8 @@ protected:
 																		// 자식에서 override해서 추가 처리 가능
 	void SetState(EEnemyState NewState);
 
-	void CheckChargeOverlap();											// 돌진 중 플레이어 충돌 감지 + 데미지 적용
-																		// ExecuteCharge에서 호출
+	virtual void CheckChargeOverlap();									// 돌진 중 플레이어 충돌 감지 + 데미지 적용
+																		// ASharkBoss - 광역 감지는 오버랩액터와 달라서 오버라이드 필요
 	
 
 	// ========= Telegraph 데칼 컴포넌트 =========
@@ -91,6 +92,12 @@ protected:
 	
     UPROPERTY(EditDefaultsOnly, Category="Enemy|Combat")
     float ChargeDamage;													// 돌진+충돌로 플레이어에게 입히는 데미지
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Charging")
+	float NormalSpeed;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Charging")
+	float ChargeSpeed;
     
 	// =========== Charging 파라미터 ===========
 	UPROPERTY(EditDefaultsOnly, Category="Enemy|Stunned")
@@ -99,12 +106,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Enemy|Stun")
 	float StunMultiplier;												// 확장성을 고려한 변수 (해당 프로젝트에서는 의미 X)
 	
-	
-	
-private:
-    EEnemyState CurrentState;
-	
-	void UpdateTelegraphDecal();
 	
 	// ============== AI 인터페이스 ==============
     void ExitTelegraphState();
@@ -119,6 +120,12 @@ private:
 	
     // ============== Stunned 타이머 ==============
     FTimerHandle StunTimerHandle;
+	
+private:
+    EEnemyState CurrentState;
+	
+	void UpdateTelegraphDecal();
+	
 	
 	bool bIsStunned;
 	

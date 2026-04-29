@@ -4,6 +4,7 @@
 #include "MarinPlayer.h"
 #include "Components/DecalComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 ABaseEnemy::ABaseEnemy()
 {
@@ -16,6 +17,8 @@ ABaseEnemy::ABaseEnemy()
 	
 	ChargeDuration = 0.4f;
 	ChargeDamage = 10.f;
+	NormalSpeed = 300.f;
+	ChargeSpeed = 1000.f;
 	
 	StunDuration = 1.0f;
 	StunMultiplier = 1.0f;
@@ -141,6 +144,13 @@ void ABaseEnemy::ExitChargingState()
 	if (!IsAlive()) return;
 	
 	GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 끄기
+	
+	if (UFloatingPawnMovement* Mov =
+			FindComponentByClass<UFloatingPawnMovement>())
+	{
+		Mov->Velocity = FVector::ZeroVector;
+		Mov->MaxSpeed = NormalSpeed;
+	}
 	
 	SetState(EEnemyState::Stunned);							// Stunned 상태로 바로 전환
 	EnterStunnedState(StunDuration * StunMultiplier);
