@@ -6,6 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "MarinController.h"
 #include "EnhancedInputComponent.h"
+#include "NemoGameState.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 
 AMarinPlayer::AMarinPlayer()
 {
@@ -57,6 +60,13 @@ AMarinPlayer::AMarinPlayer()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+	
+	
+	// ============= 위젯 붙이기 =============
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(MeshComponent);
+	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	
 }
 
 void AMarinPlayer::BeginPlay()
@@ -118,6 +128,20 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	}
 }
 
+void AMarinPlayer::UpdateOverheadHP()
+{
+	if (!OverheadWidget) return;
+	
+	UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject();
+	
+	if (!OverheadWidgetInstance) return;
+	
+	if (UTextBlock* HPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP"))))
+	{
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), CurrentHP, MaxHP)));
+		
+	}
+}
 
 
 // =============================================================
@@ -325,23 +349,16 @@ void AMarinPlayer::OnDamaged(float Amount, AActor* Causer)
 {
 	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
 	{
-		/*if (AMarinHUD* HUD = Cast<AMarinHUD>(PlayerController->GetHUD()))
-		{
-			HUD->UpdateHPBar(GetHealthPercent())							// @서희 : HP UI 업데이트 함수
-			HUD->PlayHitFlash();											// @서희 : 피격 연출 실행 함수
-		}*/
+		// @서희 : 위젯 BP에서 Tick마다 GetHealthPercent() 호출해서 HP바 업데이트
+		// @서희 : 피격 연출
 	}
 }
 
 void AMarinPlayer::OnDeath()
 {
-	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
+	ANemoGameState* NemoGameState = GetWorld() ? GetWorld()->GetGameState<ANemoGameState>() : nullptr;
+	if (NemoGameState)
 	{
-		//Controller->DisableGameInput();									// @시리 : 미구현
-		
-		/*if (AMarinHUD* HUD = Cast<AMarinHUD>(PlayerController->GetHUD()))
-		{
-			HUD->ShowGameOver();											// @서희 : 게임 오버 화면 보여주는 함수
-		}*/
+		NemoGameState->OnGameOver();
 	}
 }
