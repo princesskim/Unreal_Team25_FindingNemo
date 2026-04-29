@@ -18,8 +18,9 @@ AMarinPlayer::AMarinPlayer()
 	SwimSpeed = 550.f;
 	
 	// =========== 회전 파라미터 초기화 ===========
-	MaxPitchAngle        = 60.f;
-	RotationInterpSpeed  = 3.f;
+	MaxPitchAngle = 60.f;
+	LookSensitivity = 0.8f;
+	RotationInterpSpeed = 3.f;
 	
 	// =========== Dash 파라미터 초기화 ===========
 	DashSpeed = 2000.f;
@@ -109,7 +110,7 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 			if (PlayerController->LookAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->MoveAction,
+					PlayerController->LookAction,
 					ETriggerEvent::Triggered,
 					this,
 					&AMarinPlayer::Look
@@ -118,7 +119,7 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 			if (PlayerController->DashAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->MoveAction,
+					PlayerController->DashAction,
 					ETriggerEvent::Triggered,
 					this,
 					&AMarinPlayer::Dash
@@ -138,7 +139,7 @@ void AMarinPlayer::UpdateOverheadHP()
 	
 	if (UTextBlock* HPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP"))))
 	{
-		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), CurrentHP, MaxHP)));
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), GetCurrentHP(), GetMaxHP())));
 		
 	}
 }
@@ -178,8 +179,8 @@ void AMarinPlayer::VirticalMove(const FInputActionValue& value)
 void AMarinPlayer::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
-	AddControllerYawInput(LookInput.X);
-	AddControllerPitchInput(LookInput.Y);
+	AddControllerYawInput(LookInput.X * LookSensitivity);
+	AddControllerPitchInput(LookInput.Y * LookSensitivity);
 }
 
 void AMarinPlayer::Dash(const FInputActionValue& value)
@@ -252,6 +253,11 @@ void AMarinPlayer::StartDash()
 	
 	DashCooldownStartTime = GetWorld()->GetTimeSeconds();
 	
+	const FVector Dir = CurrentMoveDirection.IsNearlyZero() ? GetActorForwardVector() : CurrentMoveDirection;
+
+	MovementComp->Velocity = Dir * DashSpeed;								// 물리 무시하고 즉시 대시 속도로 점프
+	MovementComp->MaxSpeed = DashSpeed;										// 이동 컴포넌트가 허용하는 최대 속도 제한을 변경
+	
 	GetWorldTimerManager().SetTimer(
 		DashHandle, this,
 		&AMarinPlayer::EndDash,
@@ -266,6 +272,9 @@ void AMarinPlayer::StartDash()
 void AMarinPlayer::EndDash()
 {
 	bIsDashing = false;
+	
+	MovementComp->MaxSpeed = bSpeedBoostActive ? SwimSpeed * SpeedBoostMultiplier : SwimSpeed;
+																			// Dash가 우선순위 1순위, SpeedBoost가 2순위
 	
 	GetWorldTimerManager().SetTimer(										// Dash 끝나면 쿨타임 카운트 시작
 		DashCooldownHandle, this,

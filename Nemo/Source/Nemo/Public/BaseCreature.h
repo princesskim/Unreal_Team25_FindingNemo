@@ -65,7 +65,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Health") 
 	float MaxHP;										// BP 디테일 패널에서 액터마다 다르게 설정
 														// BP_MarinPlayer → 100 / BP_Lionfish → 30 / BP_BossShark → 300
-	float CurrentHP;
 	
 	void ProcessDeath(AActor* Causer);					// HP가 0이 됐을 때 내부에서 호출
 	
@@ -80,5 +79,5 @@ protected:
 
 private:
 	bool bIsDead;
-
+	float CurrentHP;
 };

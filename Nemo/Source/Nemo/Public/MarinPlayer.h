@@ -78,6 +78,9 @@ protected:
 	float MaxPitchAngle;											// 위아래 시야 최대 각도 제한
 	
 	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float LookSensitivity;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
 	float RotationInterpSpeed;										// 메시 회전 보간 속도
 	
 	
