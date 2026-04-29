@@ -15,6 +15,11 @@ class NEMO_API ABabyFish : public ABaseItem
 	GENERATED_BODY()
 
 public:
+	ABabyFish();
+
 	virtual void ActivateItem(AActor* Activator) override;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Point")
+	float PointValue;
 	
 };

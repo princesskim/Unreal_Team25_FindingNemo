@@ -3,10 +3,7 @@
 
 #include "NemoGameMode.h"
 
-void ANemoGameMode::StartLevel()
+ANemoGameMode::ANemoGameMode()
 {
-}
 
-void ANemoGameMode::EndLevel()
-{
 }
