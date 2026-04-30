@@ -5,8 +5,9 @@
 #include "SpawnVolume.h"
 #include "BabyFish.h"
 #include "BombItem.h"
-//#include "Components/TextBlock.h"
-//#include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+
 
 ANemoGameState::ANemoGameState()
 {
@@ -27,9 +28,18 @@ void ANemoGameState::BeginPlay()
 {
     Super::BeginPlay();
     StartLevel();
+    UpdateHUD();
+
+    GetWorldTimerManager().SetTimer(
+        HUDUpdateTimerHandle,
+        this,
+        &ANemoGameState::UpdateHUD,
+        0.1f,
+        true
+    );
 }
 
-int32 ANemoGameState::GetScoure() const
+int32 ANemoGameState::GetScore() const
 {
     return Score;
 }
@@ -91,6 +101,8 @@ void ANemoGameState::StartLevel()
             MarinController->ShowGameHUD();
         }
     }
+
+    UpdateHUD();
 
     StartWave(1);
 }
@@ -253,21 +265,23 @@ void ANemoGameState::EndLevel()
 
 void ANemoGameState::UpdateHUD()
 {
-	if (APlayerController* PlayerController =
+
+
+	if (AController* PlayerController =
 		GetWorld()->GetFirstPlayerController())
 	{
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
 			
-			/*
+			
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
 				if (UTextBlock* TimeText = Cast<UTextBlock>
 					(HUDWidget->GetWidgetFromName(TEXT("Time"))))
 				{
 					float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-					TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.1f"), RemainingTime)));
+					TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
 				}
 
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
@@ -276,7 +290,11 @@ void ANemoGameState::UpdateHUD()
 					if (UGameInstance* GameInstance = GetGameInstance())
 					{
 						UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-						ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), NemoGameInstance->TotalScore)));
+                        //디버그용 메시지
+                       // GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,FString::Printf(TEXT("NemoGameInstance")));
+                      
+                        ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), NemoGameInstance->TotalScore)));
+                        
 					}
 				}
 
@@ -284,10 +302,10 @@ void ANemoGameState::UpdateHUD()
 					(HUDWidget->GetWidgetFromName(TEXT("Level"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("Level: %d"), CurrentLevelIndex + 1)));
+					(FString::Printf(TEXT("%d"), CurrentWave )));
 				}
 			}
-			*/
+			
 		}
 	}
 }
