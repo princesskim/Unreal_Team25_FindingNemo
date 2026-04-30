@@ -93,5 +93,5 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	void HideAllWidgets();
+	void ShutAllWidgets();
 };

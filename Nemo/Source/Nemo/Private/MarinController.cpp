@@ -48,7 +48,7 @@ void AMarinController::BeginPlay()
 	}
 }
 
-void AMarinController::ShowMainMenu(bool bIsRestart)
+void AMarinController::ShutAllWidgets()
 {
 	// HUD가 켜져 있다면 닫기
 	if (HUDWidgetInstance)
@@ -56,14 +56,35 @@ void AMarinController::ShowMainMenu(bool bIsRestart)
 		HUDWidgetInstance->RemoveFromParent();
 		HUDWidgetInstance = nullptr;
 	}
-	
+
 	// 이미 메뉴가 떠 있으면 제거
 	if (MainMenuWidgetInstance)
 	{
 		MainMenuWidgetInstance->RemoveFromParent();
 		MainMenuWidgetInstance = nullptr;
 	}
-	
+
+	// 이미 클리어가 떠 있으면 제거
+	if (LevelClearWidgetInstance)
+	{
+		LevelClearWidgetInstance->RemoveFromParent();
+		LevelClearWidgetInstance = nullptr;
+	}
+
+	// 이미 게임오버가 켜져있다면 제거
+	if (GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance->RemoveFromParent();
+		GameOverWidgetInstance = nullptr;
+	}
+
+}
+
+void AMarinController::ShowMainMenu(bool bIsRestart)
+{
+
+	ShutAllWidgets();
+
 	// 메뉴 UI 생성
 	if (MainMenuWidgetClass)
 	{		
@@ -91,19 +112,7 @@ void AMarinController::StartGame()
 
 void AMarinController::ShowGameHUD()
 {
-	// HUD가 켜져 있다면 닫기
-	if (HUDWidgetInstance)
-	{
-		HUDWidgetInstance->RemoveFromParent();
-		HUDWidgetInstance = nullptr;
-	}
-	
-	// 이미 메뉴가 떠 있으면 제거
-	if (MainMenuWidgetInstance)
-	{
-		MainMenuWidgetInstance->RemoveFromParent();
-		MainMenuWidgetInstance = nullptr;
-	}
+	ShutAllWidgets();
 
 	if (HUDWidgetClass)
 	{
@@ -163,8 +172,35 @@ void AMarinController::HideNarrationPanel()
 
 void AMarinController::ShowLevelClear()
 {
+	ShutAllWidgets();
+
+	if (LevelClearWidgetClass)
+	{
+		LevelClearWidgetInstance = CreateWidget<UUserWidget>(this, LevelClearWidgetClass);
+		if (LevelClearWidgetInstance)
+		{
+			LevelClearWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
 }
 
 void AMarinController::ShowGameOver()
 {
+
+	ShutAllWidgets();
+
+	if (GameOverWidgetClass)
+	{
+		GameOverWidgetInstance = CreateWidget<UUserWidget>(this, GameOverWidgetClass);
+		if (GameOverWidgetInstance)
+		{
+			GameOverWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
 }
