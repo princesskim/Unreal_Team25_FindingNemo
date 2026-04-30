@@ -3,6 +3,7 @@
 
 #include "SpawnVolume.h"
 #include "Components/BoxComponent.h"
+#include "ActorSpawnRow.h"
 
 // Sets default values
 ASpawnVolume::ASpawnVolume()
@@ -18,7 +19,7 @@ ASpawnVolume::ASpawnVolume()
 
 }
 
-AActor* ASpawnVolume::SpawnRandomItem(FName ActorType)
+AActor* ASpawnVolume::SpawnRandomItem(EActorType ActorType)
 {
 	if (FActorSpawnRow* SelectedRow = GetRandomItem(ActorType))
 	{
@@ -78,7 +79,7 @@ AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 
 //ActorType은 Item(아이템), Target(플레이어 수집 목표), Creature(괴물)로 분류
 //자세한 사항은 SpawnRate 데이터 레이블 확인!
-FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
+FActorSpawnRow* ASpawnVolume::GetRandomItem(EActorType ActorType)
 {
 	if (!ActorDataTable) return nullptr;
 

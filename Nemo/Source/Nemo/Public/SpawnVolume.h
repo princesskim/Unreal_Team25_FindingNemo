@@ -28,9 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	UDataTable* ActorDataTable;
 
-	AActor* SpawnRandomItem(FName ActorType);
+	AActor* SpawnRandomItem(EActorType ActorType);
 	//FActorSpawnRow* GetRandomItem() const;
-	FActorSpawnRow* GetRandomItem(FName InType);
+	FActorSpawnRow* GetRandomItem(EActorType InType);
 
 
 

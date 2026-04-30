@@ -21,6 +21,7 @@ ANemoGameState::ANemoGameState()
 void ANemoGameState::BeginPlay()
 {
 	Super::BeginPlay();
+	StartLevel();
 }
 
 int32 ANemoGameState::GetScoure() const
@@ -51,7 +52,7 @@ void ANemoGameState::OnGameOver()
 	}
 }
 
-void ANemoGameState::RandomSpawn(FName SpawnType, int32 SpawnNum, TArray<AActor*> FoundVolumes)
+void ANemoGameState::RandomSpawn(EActorType SpawnType, int32 SpawnNum, TArray<AActor*> FoundVolumes)
 {
 
 	for (int32 i = 0; i < SpawnNum; i++)
@@ -70,6 +71,13 @@ void ANemoGameState::RandomSpawn(FName SpawnType, int32 SpawnNum, TArray<AActor*
 
 void ANemoGameState::StartLevel()
 {
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+	RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
+	RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
 		if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
@@ -87,12 +95,7 @@ void ANemoGameState::StartLevel()
 		}
 	}
 
-	TArray<AActor*> FoundVolumes;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
 
-	RandomSpawn("Item", ItemToSpawn, FoundVolumes);
-	RandomSpawn("Creature", CreatureToSpawn, FoundVolumes);
-	RandomSpawn("Target", TargetToSpawn, FoundVolumes);
 	// �ð� ������ �Ѷ� ��� ���ϸ� ���� ����
 	/*
 	GetWorldTimerManager().SetTimer(

@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> ActorClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ActorType;
+	EActorType ActorType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnWeight;
 

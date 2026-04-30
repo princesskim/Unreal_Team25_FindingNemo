@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "ActorSpawnRow.h"
 #include "NemoGameState.generated.h"
 
 UCLASS()
@@ -45,7 +46,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	void OnGameOver();
 
-	void RandomSpawn(FName SpawnType, int32 SpawnNum,TArray<AActor*> FoundVolumes);
+	void RandomSpawn(EActorType SpawnType, int32 SpawnNum,TArray<AActor*> FoundVolumes);
 
 	void StartLevel();
 	void OnLevelTimeUp();
