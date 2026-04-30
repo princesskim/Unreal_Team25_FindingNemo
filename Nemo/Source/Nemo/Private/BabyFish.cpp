@@ -20,6 +20,7 @@ void ABabyFish::ActivateItem(AActor* Activator)
 			if (ANemoGameState* GameState = World->GetGameState<ANemoGameState>())
 			{
 				GameState->AddScore(PointValue);
+				GameState->OnBabyFishCollected();
 			}
 		}
 		DestroyItem();

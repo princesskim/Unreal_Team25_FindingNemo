@@ -1,148 +1,236 @@
 ﻿#include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "MarinController.h"
-#include "Kismet/GamePlayStatics.h"
+#include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
+#include "BabyFish.h"
+#include "BombItem.h"
 //#include "Components/TextBlock.h"
 //#include "Blueprint/UserWidget.h"
 
 ANemoGameState::ANemoGameState()
 {
-	Score = 0;
-	LevelDuration = 300.f;
-	CurrentLevelIndex = 0;
-	MaxLevels = 3;
-
-	TargetToSpawn = 0;
-	ItemToSpawn = 0;
-	CreatureToSpawn = 0;
+    Score = 0;
+    LevelDuration = 300.f;
+    CurrentLevelIndex = 0;
+    MaxLevels = 3;
+    TargetToSpawn = 0;
+    ItemToSpawn = 0;
+    CreatureToSpawn = 0;
+    CurrentWave = 0;
+    MaxWaves = 3;
+    BabyFishCount = 0;
+    BossSpawnLocation = FVector::ZeroVector;
 }
 
 void ANemoGameState::BeginPlay()
 {
-	Super::BeginPlay();
-	StartLevel();
+    Super::BeginPlay();
+    StartLevel();
 }
 
 int32 ANemoGameState::GetScoure() const
 {
-	return Score;
+    return Score;
 }
 
 void ANemoGameState::AddScore(int32 Amount)
 {
-	if (UGameInstance* GameInstance = GetGameInstance())
-	{
-		UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-		if (NemoGameInstance)
-		{
-			NemoGameInstance->AddToScore(Amount);
-		}
-	}
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
+        if (NemoGameInstance)
+        {
+            NemoGameInstance->AddToScore(Amount);
+        }
+    }
 }
 
 void ANemoGameState::OnGameOver()
 {
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
-		{
-			MarinController->SetPause(true);
-		}
-	}
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
+        {
+            MarinController->SetPause(true);
+        }
+    }
 }
 
 void ANemoGameState::RandomSpawn(EActorType SpawnType, int32 SpawnNum, TArray<AActor*> FoundVolumes)
 {
+    if (FoundVolumes.Num() == 0) return;
 
-	for (int32 i = 0; i < SpawnNum; i++)
-	{
-		if (FoundVolumes.Num() > 0)
-		{
-			ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]);
-			if (SpawnVolume)
-			{
-				AActor* SpawnedActor = SpawnVolume->SpawnRandomItem(SpawnType);
-
-			}
-		}
-	}
+    for (int32 i = 0; i < SpawnNum; i++)
+    {
+        // 랜덤 볼륨에서 스폰
+        int32 RandomIndex = FMath::RandRange(0, FoundVolumes.Num() - 1);
+        ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[RandomIndex]);
+        if (SpawnVolume)
+        {
+            SpawnVolume->SpawnRandomItem(SpawnType);
+        }
+    }
 }
 
 void ANemoGameState::StartLevel()
 {
-	TArray<AActor*> FoundVolumes;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
+        if (NemoGameInstance)
+        {
+            CurrentLevelIndex = NemoGameInstance->CurrentLevelIndex;
+        }
+    }
 
-	RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
-	RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
-	RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
+        {
+            //MarinController->ShowGameHUD();
+        }
+    }
 
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
-		{
-			//MarinController->ShowGameHUD();
-		}
-	}
+    StartWave(1);
+}
 
-	if (UGameInstance* GameInstance = GetGameInstance())
-	{
-		UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-		if (NemoGameInstance)
-		{
-			CurrentLevelIndex = NemoGameInstance->CurrentLevelIndex;
-		}
-	}
+void ANemoGameState::StartWave(int32 WaveIndex)
+{
+    // 이전 웨이브 액터 정리
+    if (WaveIndex > 1)
+    {
+        ClearWaveActors();
+    }
 
+    CurrentWave = WaveIndex;
 
-	// �ð� ������ �Ѷ� ��� ���ϸ� ���� ����
-	/*
-	GetWorldTimerManager().SetTimer(
-		LevelTimerHandle,
-		this,
-		&ASpartaGameState::OnLevelTimeUp,
-		LevelDuration,
-		false
-	);*/
+    TArray<AActor*> FoundVolumes;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,
+        FString::Printf(TEXT("Wave %d Start!"), CurrentWave));
+
+    if (CurrentWave == 1)
+    {
+        RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        BabyFishCount = TargetToSpawn;
+
+        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
+            FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+    }
+    else if (CurrentWave == 2)
+    {
+        RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+        BabyFishCount = TargetToSpawn;
+
+        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
+            FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+    }
+    else if (CurrentWave == 3)
+    {
+        if (BossSharkClass)
+        {
+            FActorSpawnParameters SpawnParams;
+            GetWorld()->SpawnActor<AActor>(
+                BossSharkClass,
+                BossSpawnLocation,
+                FRotator::ZeroRotator,
+                SpawnParams
+            );
+            GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Boss Spawned!"));
+        }
+    }
+}
+
+void ANemoGameState::OnBabyFishCollected()
+{
+    BabyFishCount--;
+
+    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,
+        FString::Printf(TEXT("BabyFish Remaining: %d"), BabyFishCount));
+
+    if (BabyFishCount <= 0)
+    {
+        OnWaveClear();
+    }
+}
+
+void ANemoGameState::OnBossDefeated()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Boss Defeated!"));
+    OnWaveClear();
+}
+
+void ANemoGameState::OnWaveClear()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,
+        FString::Printf(TEXT("Wave %d Clear!"), CurrentWave));
+
+    if (CurrentWave >= MaxWaves)
+    {
+        EndLevel();
+        return;
+    }
+
+    StartWave(CurrentWave + 1);
+}
+
+void ANemoGameState::ClearWaveActors()
+{
+    // 남은 베이비피쉬 정리
+    TArray<AActor*> RemainingFish;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), RemainingFish);
+    for (AActor* Actor : RemainingFish)
+    {
+        Actor->Destroy();
+    }
+
+    // 남은 폭탄 정리
+    TArray<AActor*> RemainingBombs;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABombItem::StaticClass(), RemainingBombs);
+    for (AActor* Actor : RemainingBombs)
+    {
+        Actor->Destroy();
+    }
 }
 
 void ANemoGameState::OnLevelTimeUp()
 {
-	EndLevel();
+    EndLevel();
 }
 
 void ANemoGameState::EndLevel()
 {
-	//GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
+        if (NemoGameInstance)
+        {
+            AddScore(Score);
+            CurrentLevelIndex++;
+            NemoGameInstance->CurrentLevelIndex = CurrentLevelIndex;
+        }
+    }
 
+    if (CurrentLevelIndex >= MaxLevels)
+    {
+        OnGameOver();
+        return;
+    }
 
-	if (UGameInstance* GameInstance = GetGameInstance())
-	{
-		UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-		if (NemoGameInstance)
-		{
-			AddScore(Score);
-			CurrentLevelIndex++;
-			NemoGameInstance->CurrentLevelIndex = CurrentLevelIndex;
-		}
-	}
-
-	if (CurrentLevelIndex >= MaxLevels)
-	{
-		OnGameOver();
-		return;
-	}
-
-	if (LevelMapNames.IsValidIndex(CurrentLevelIndex))
-	{
-		UGameplayStatics::OpenLevel(GetWorld(), LevelMapNames[CurrentLevelIndex]);
-	}
-	else
-	{
-		OnGameOver();
-	}
+    if (LevelMapNames.IsValidIndex(CurrentLevelIndex))
+    {
+        UGameplayStatics::OpenLevel(GetWorld(), LevelMapNames[CurrentLevelIndex]);
+    }
+    else
+    {
+        OnGameOver();
+    }
 }
+
+// ================ UI ================
 
 void ANemoGameState::UpdateHUD()
 {
@@ -152,7 +240,7 @@ void ANemoGameState::UpdateHUD()
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
-			// UI ������ Ű���� ���� �Ϻ� ���� ����
+			
 			/*
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
