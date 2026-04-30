@@ -1,11 +1,15 @@
 // MarinPlayer.cpp
 
 #include "MarinPlayer.h"
+#include "BaseEnemy.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "MarinController.h"
 #include "EnhancedInputComponent.h"
+#include "NemoGameState.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 
 AMarinPlayer::AMarinPlayer()
 {
@@ -15,8 +19,9 @@ AMarinPlayer::AMarinPlayer()
 	SwimSpeed = 550.f;
 	
 	// =========== 회전 파라미터 초기화 ===========
-	MaxPitchAngle        = 60.f;
-	RotationInterpSpeed  = 3.f;
+	MaxPitchAngle = 60.f;
+	LookSensitivity = 0.8f;
+	RotationInterpSpeed = 3.f;
 	
 	// =========== Dash 파라미터 초기화 ===========
 	DashSpeed = 2000.f;
@@ -57,6 +62,13 @@ AMarinPlayer::AMarinPlayer()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+	
+	
+	// ============= 위젯 붙이기 =============
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(MeshComponent);
+	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	
 }
 
 void AMarinPlayer::BeginPlay()
@@ -99,7 +111,7 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 			if (PlayerController->LookAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->MoveAction,
+					PlayerController->LookAction,
 					ETriggerEvent::Triggered,
 					this,
 					&AMarinPlayer::Look
@@ -108,7 +120,7 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 			if (PlayerController->DashAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->MoveAction,
+					PlayerController->DashAction,
 					ETriggerEvent::Triggered,
 					this,
 					&AMarinPlayer::Dash
@@ -118,6 +130,20 @@ void AMarinPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	}
 }
 
+void AMarinPlayer::UpdateOverheadHP()
+{
+	if (!OverheadWidget) return;
+	
+	UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject();
+	
+	if (!OverheadWidgetInstance) return;
+	
+	if (UTextBlock* HPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP"))))
+	{
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), GetCurrentHP(), GetMaxHP())));
+		
+	}
+}
 
 
 // =============================================================
@@ -154,8 +180,8 @@ void AMarinPlayer::VirticalMove(const FInputActionValue& value)
 void AMarinPlayer::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
-	AddControllerYawInput(LookInput.X);
-	AddControllerPitchInput(LookInput.Y);
+	AddControllerYawInput(LookInput.X * LookSensitivity);
+	AddControllerPitchInput(LookInput.Y * LookSensitivity);
 }
 
 void AMarinPlayer::Dash(const FInputActionValue& value)
@@ -228,6 +254,11 @@ void AMarinPlayer::StartDash()
 	
 	DashCooldownStartTime = GetWorld()->GetTimeSeconds();
 	
+	const FVector Dir = CurrentMoveDirection.IsNearlyZero() ? GetActorForwardVector() : CurrentMoveDirection;
+
+	MovementComp->Velocity = Dir * DashSpeed;								// 물리 무시하고 즉시 대시 속도로 점프
+	MovementComp->MaxSpeed = DashSpeed;										// 이동 컴포넌트가 허용하는 최대 속도 제한을 변경
+	
 	GetWorldTimerManager().SetTimer(
 		DashHandle, this,
 		&AMarinPlayer::EndDash,
@@ -237,11 +268,29 @@ void AMarinPlayer::StartDash()
 		DamageImmuneHandle, this,
 		&AMarinPlayer::EndDashImmune,
 		DamageImmuneDuration, false);
+	
+	// 주변 경직된 적 처치 판정
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, ABaseEnemy::StaticClass());
+	
+	for (AActor* Actor : OverlappingActors)
+	{
+		if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(Actor))
+		{
+			if (Enemy->GetEnemyState() == EEnemyState::Stunned)
+			{
+				Enemy->KillInstantly();
+			}
+		}
+	}
 }
 
 void AMarinPlayer::EndDash()
 {
 	bIsDashing = false;
+	
+	MovementComp->MaxSpeed = bSpeedBoostActive ? SwimSpeed * SpeedBoostMultiplier : SwimSpeed;
+																			// Dash가 우선순위 1순위, SpeedBoost가 2순위
 	
 	GetWorldTimerManager().SetTimer(										// Dash 끝나면 쿨타임 카운트 시작
 		DashCooldownHandle, this,
@@ -325,23 +374,16 @@ void AMarinPlayer::OnDamaged(float Amount, AActor* Causer)
 {
 	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
 	{
-		/*if (AMarinHUD* HUD = Cast<AMarinHUD>(PlayerController->GetHUD()))
-		{
-			HUD->UpdateHPBar(GetHealthPercent())							// @서희 : HP UI 업데이트 함수
-			HUD->PlayHitFlash();											// @서희 : 피격 연출 실행 함수
-		}*/
+		// @서희 : 위젯 BP에서 Tick마다 GetHealthPercent() 호출해서 HP바 업데이트
+		// @서희 : 피격 연출
 	}
 }
 
 void AMarinPlayer::OnDeath()
 {
-	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
+	ANemoGameState* NemoGameState = GetWorld() ? GetWorld()->GetGameState<ANemoGameState>() : nullptr;
+	if (NemoGameState)
 	{
-		//Controller->DisableGameInput();									// @시리 : 미구현
-		
-		/*if (AMarinHUD* HUD = Cast<AMarinHUD>(PlayerController->GetHUD()))
-		{
-			HUD->ShowGameOver();											// @서희 : 게임 오버 화면 보여주는 함수
-		}*/
+		NemoGameState->OnGameOver();
 	}
 }

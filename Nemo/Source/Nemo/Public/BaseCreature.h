@@ -62,10 +62,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Health")
+	UPROPERTY(EditDefaultsOnly, Category="Health") 
 	float MaxHP;										// BP 디테일 패널에서 액터마다 다르게 설정
 														// BP_MarinPlayer → 100 / BP_Lionfish → 30 / BP_BossShark → 300
-	void ProcessDeath(AActor* Causer);					// HP가 0이 됐을 때 내부에서 호출
+	
+	void ProcessDeath();								// HP가 0이 됐을 때 내부에서 호출
 	
 	virtual void OnDeath();								// AMarinPlayer → 게임오버 UI
 														// ABaseEnemy → Dead 상태 전환
@@ -77,7 +78,6 @@ protected:
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 private:
-	float CurrentHP;
 	bool bIsDead;
-
+	float CurrentHP;
 };

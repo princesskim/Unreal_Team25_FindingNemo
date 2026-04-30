@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class USphereComponent;
 struct FInputActionValue;
+class UWidgetComponent;
 
 UCLASS()
 class NEMO_API AMarinPlayer : public ABaseCreature
@@ -25,6 +26,10 @@ public:
 	virtual bool IsDamageImmune() const override;
 	
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* OverheadWidget;
+	
 	
 	// ============= UI용 상태 조회 =============
 	UFUNCTION(BlueprintPure, Category="Dash")
@@ -48,6 +53,7 @@ public:
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	void UpdateOverheadHP();
 	
 	virtual void OnDeath() override;	
 	
@@ -70,6 +76,9 @@ protected:
 	// ============== 회전 파라미터 ==============
 	UPROPERTY(EditAnywhere, Category="Movement")
 	float MaxPitchAngle;											// 위아래 시야 최대 각도 제한
+	
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float LookSensitivity;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Movement")
 	float RotationInterpSpeed;										// 메시 회전 보간 속도

@@ -61,7 +61,7 @@ void ABaseCreature::KillInstantly()
 {
 	if (bIsDead) return;
 	CurrentHP = 0.f;
-	ProcessDeath(nullptr);
+	ProcessDeath();
 }
 
 float ABaseCreature::GetCurrentHP() const
@@ -79,7 +79,7 @@ float ABaseCreature::GetHealthPercent() const
 	return (MaxHP > 0.f) ? FMath::Clamp(CurrentHP / MaxHP * 100, 0.f, 100.f) : 0;
 }
 
-void ABaseCreature::ProcessDeath(AActor* Causer)
+void ABaseCreature::ProcessDeath()
 {
 	bIsDead = true;
 	OnDeath();

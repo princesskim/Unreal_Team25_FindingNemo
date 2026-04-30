@@ -16,7 +16,8 @@ public class Nemo : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
 			"AIModule",								// AI 관련 클래스들이 들어있는 모듈
-			"NavigationSystem"						// NavMesh 관련 기능 모듈 (AI가 길 찾을 때 필요)
+			"NavigationSystem",						// NavMesh 관련 기능 모듈 (AI가 길 찾을 때 필요)
+			"UMG"						
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
