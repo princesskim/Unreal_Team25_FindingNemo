@@ -8,7 +8,6 @@
 #include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
 
-
 ANemoGameState::ANemoGameState()
 {
     Score = 0;
@@ -21,13 +20,17 @@ ANemoGameState::ANemoGameState()
     CurrentWave = 0;
     MaxWaves = 3;
     BabyFishCount = 0;
+    MinBabyFishCount = 0;
+    MaxBabyFishCount = 0;
     BossSpawnLocation = FVector::ZeroVector;
 }
 
 void ANemoGameState::BeginPlay()
 {
     Super::BeginPlay();
+
     StartLevel();
+
     UpdateHUD();
 
     GetWorldTimerManager().SetTimer(
@@ -130,6 +133,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         TArray<AActor*> SpawnedFish;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
         BabyFishCount = SpawnedFish.Num();
+        MaxBabyFishCount = SpawnedFish.Num();
 
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
             FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -178,6 +182,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 void ANemoGameState::OnBabyFishCollected()
 {
     BabyFishCount--;
+    MinBabyFishCount++;
 
     GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,
         FString::Printf(TEXT("BabyFish Remaining: %d"), BabyFishCount));
@@ -205,6 +210,7 @@ void ANemoGameState::OnWaveClear()
         return;
     }
 
+    MinBabyFishCount = 0;
     StartWave(CurrentWave + 1);
 }
 
@@ -265,47 +271,55 @@ void ANemoGameState::EndLevel()
 
 void ANemoGameState::UpdateHUD()
 {
-
-
-	if (AController* PlayerController =
+	if (APlayerController* PlayerController =
 		GetWorld()->GetFirstPlayerController())
 	{
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
-			
-			
+
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
-				if (UTextBlock* TimeText = Cast<UTextBlock>
-					(HUDWidget->GetWidgetFromName(TEXT("Time"))))
-				{
-					float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-					TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
-				}
+                
+                if (UTextBlock* TimeText = Cast<UTextBlock>
+                    (HUDWidget->GetWidgetFromName(TEXT("Time"))))
+                {
+                    float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
+                }
 
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
-					(HUDWidget->GetWidgetFromName(TEXT("Score"))))
+					(HUDWidget->GetWidgetFromName(TEXT("ScoreText"))))
 				{
 					if (UGameInstance* GameInstance = GetGameInstance())
 					{
 						UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-                        //디버그용 메시지
-                       // GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,FString::Printf(TEXT("NemoGameInstance")));
                       
                         ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), NemoGameInstance->TotalScore)));
-                        
 					}
 				}
 
 				if (UTextBlock* LevelIndexText = Cast<UTextBlock>
-					(HUDWidget->GetWidgetFromName(TEXT("Level"))))
+					(HUDWidget->GetWidgetFromName(TEXT("wave"))))
 				{
 					LevelIndexText->SetText(FText::FromString
 					(FString::Printf(TEXT("%d"), CurrentWave )));
 				}
+
+                if (UTextBlock* LevelIndexText = Cast<UTextBlock>
+                    (HUDWidget->GetWidgetFromName(TEXT("MaxFish"))))
+                {
+                    LevelIndexText->SetText(FText::FromString
+                    (FString::Printf(TEXT("%d"), MaxBabyFishCount)));
+                }
+
+                if (UTextBlock* LevelIndexText = Cast<UTextBlock>
+                    (HUDWidget->GetWidgetFromName(TEXT("CollectedFish"))))
+                {
+                    LevelIndexText->SetText(FText::FromString
+                    (FString::Printf(TEXT("%d"), MinBabyFishCount)));
+                }
 			}
-			
 		}
 	}
 }

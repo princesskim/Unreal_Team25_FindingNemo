@@ -7,7 +7,7 @@
 ABabyFish::ABabyFish()
 {
 	ItemType = "Fish";
-	PointValue = 1;
+	PointValue = 132;
 }
 
 void ABabyFish::ActivateItem(AActor* Activator)

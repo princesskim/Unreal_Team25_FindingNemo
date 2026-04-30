@@ -37,6 +37,10 @@ public:
     int32 MaxWaves;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
     int32 BabyFishCount;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
+    int32 MinBabyFishCount;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
+    int32 MaxBabyFishCount;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
     TSubclassOf<AActor> BossSharkClass;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")

@@ -176,7 +176,9 @@ void AMarinPlayer::Move(const FInputActionValue& value)
 
 void AMarinPlayer::VirticalMove(const FInputActionValue& value)
 {
-	AddMovementInput(FVector::UpVector, value.Get<float>());
+	float VirticalAxis = value.Get<float>();
+
+	AddMovementInput(FVector::UpVector, VirticalAxis);
 }
 
 void AMarinPlayer::Look(const FInputActionValue& value)
