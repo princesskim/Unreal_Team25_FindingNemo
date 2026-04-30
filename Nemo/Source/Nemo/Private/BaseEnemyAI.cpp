@@ -6,7 +6,7 @@
 
 ABaseEnemyAI::ABaseEnemyAI()
 {
-	PrimaryActorTick.bCanEverTick(true);
+	PrimaryActorTick.bCanEverTick = true;
 	
 	PlayerDetectionRadius = 1200.f;
 	AttackCooldownTime = 2.5f;
