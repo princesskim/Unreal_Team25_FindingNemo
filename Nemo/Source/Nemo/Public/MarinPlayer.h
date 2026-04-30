@@ -6,7 +6,6 @@
 #include "BaseCreature.h"
 #include "MarinPlayer.generated.h"
 
-class UFloatingPawnMovement;	
 class USpringArmComponent;
 class UCameraComponent;
 class USphereComponent;
@@ -60,9 +59,6 @@ protected:
 	virtual void OnDamaged(float Amount, AActor* Causer) override;
 	
 	// ================ 컴포넌트 ================
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	TObjectPtr<UFloatingPawnMovement> MovementComp;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 	

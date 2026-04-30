@@ -10,39 +10,22 @@ ABossShark::ABossShark()
 	// ============= 파라미터 초기화 =============
 	MaxHP = 300.f;
 	
-	TelegraphDecalRadius = 300.f;
-	TelegraphDuration = 3.f;
+	TelegraphDecalRadius = 350.f;
+	TelegraphDuration = 10.f;
 	
-	ChargeDuration = 0.5f;
-	ChargeDamage = 20.f;
-	NormalSpeed = 250.f;
-	ChargeSpeed = 1400.f;
+	ChargeDuration = 1.2f;
+	ChargeDamage = 25.f;
+	NormalSpeed = 220.f;
+	ChargeSpeed = 4000.f;
 	
-	StunDuration = 1.0f;
+	StunDuration = 1.5f;
 	
-	ChargeRadius         = 300.f;
+	RotationInterpSpeed = 2.0f;
+	
+	ChargeRadius = 300.f;
 }
 
-void ABossShark::EnterChargingState()
-{
-	Super::EnterChargingState();
 
-	APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (!Player) return;
-	
-	FVector Dir = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	FRotator TargetRot = Dir.Rotation();
-	SetActorRotation(TargetRot);
-	
-	if (UFloatingPawnMovement* Mov =
-			FindComponentByClass<UFloatingPawnMovement>())
-	{
-		Mov->MaxSpeed = ChargeSpeed;
-		Mov->Velocity = Dir * ChargeSpeed;
-	}
-	
-	Super::EnterChargingState();							// Charge 타이머와 충돌 감지 반복 타이머 시작!
-}
 
 void ABossShark::CheckChargeOverlap()
 {
@@ -56,8 +39,10 @@ void ABossShark::CheckChargeOverlap()
 	{
 		if (AMarinPlayer* MarinPlayer = Cast<AMarinPlayer>(Player))
 		{
-			MarinPlayer->ApplyDamage(ChargeDamage, this);
+			GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 우선적으로 끄기
 			GetWorldTimerManager().ClearTimer(ChargeTimerHandle); // 타이머 끄기
+			
+			MarinPlayer->ApplyDamage(ChargeDamage, this);
 			ExitChargingState();
 		}
 	}
