@@ -49,16 +49,18 @@ void ASpawnVolume::Tick(float DeltaTime)
 
 FVector ASpawnVolume::GetRandomPointInVolume() const
 {
-	FVector BoxExtent = SpawningBox->GetScaledBoxExtent();
+	
+	FVector BoxExtentPlus = GetActorLocation() + SpawningBox->GetScaledBoxExtent();
+	FVector BoxExtentMinus = GetActorLocation() - SpawningBox->GetScaledBoxExtent();
 	//박스 컴포넌트의 절반 길이만큼을 반환한다.
 	//200, 100, 50 Scale (2,1,1) -> 400,100,50
 	//중심부터 끝까지의 거리
 	FVector BoxOrigin = SpawningBox->GetComponentLocation();
 	//
 	return FVector(
-		FMath::FRandRange(-BoxExtent.X, BoxExtent.X)
-		, FMath::FRandRange(-BoxExtent.Y, BoxExtent.Y)
-		, FMath::FRandRange(-BoxExtent.Z, BoxExtent.Z)
+		FMath::FRandRange(BoxExtentMinus.X, BoxExtentPlus.X)
+		, FMath::FRandRange(BoxExtentMinus.Y, BoxExtentPlus.Y)
+		, FMath::FRandRange(BoxExtentMinus.Z, BoxExtentPlus.Z)
 	);
 }
 

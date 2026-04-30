@@ -1,11 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "NemoHUDWidget.h"
 #include "Components/ProgressBar.h"
 
 
-//HP¹Ù ¾÷µ¥ÀÌÆ®
+//HPï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 void UNemoHUDWidget::UpdateHPBar(float CurrentHP, float MaxHP)
 {
 	if (HPBar == nullptr || MaxHP <= 0.0f)
