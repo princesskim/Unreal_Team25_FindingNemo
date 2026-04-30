@@ -4,6 +4,8 @@
 #include "NemoHUDWidget.h"
 #include "Components/ProgressBar.h"
 
+
+//HP바 업데이트
 void UNemoHUDWidget::UpdateHPBar(float CurrentHP, float MaxHP)
 {
 	if (HPBar == nullptr || MaxHP <= 0.0f)
