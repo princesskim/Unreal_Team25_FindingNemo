@@ -13,8 +13,11 @@ ABaseCreature::ABaseCreature()
 	bIsDead = false;
 	
 	// ============= 컴포넌트 생성 =============
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	SetRootComponent(MeshComponent);
+	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = RootComp;
+	
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComp->SetupAttachment(RootComponent);
 }
 
 

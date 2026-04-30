@@ -4,19 +4,24 @@
 #include "BabyFish.h"
 #include "NemoGameState.h"
 
+ABabyFish::ABabyFish()
+{
+	ItemType = "Fish";
+	PointValue = 1;
+}
+
 void ABabyFish::ActivateItem(AActor* Activator)
 {
-	//if (Activator && Activator->ActorHasTag("Player"))
-	//{
-	//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %d Points"),PointValue));
-	//	if (UWorld* World = GetWorld())
-	//	{
-	//		if (ANemoGameState* GameState = World->GetGameState<ANemoGameState>())
-	//		{
-	//			GameState->AddScore(PointValue);
-	//			GameState->OnCoinCollected();
-	//		}
-	//	}
-	//	DestroyItem();
-	//}
+	if (Activator && Activator->ActorHasTag("Player"))
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %d Points"),PointValue));
+		if (UWorld* World = GetWorld())
+		{
+			if (ANemoGameState* GameState = World->GetGameState<ANemoGameState>())
+			{
+				GameState->AddScore(PointValue);
+			}
+		}
+		DestroyItem();
+	}
 }

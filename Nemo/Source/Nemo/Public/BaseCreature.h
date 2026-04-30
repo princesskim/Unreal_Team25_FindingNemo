@@ -18,6 +18,7 @@
  *               └── ASharkBoss
  */
 
+class USceneComponent;
 class UStaticMeshComponent;
 
 UCLASS(Abstract)										// Abstract : 레벨에 직접 배치 불가, 자식 클래스를 통해서만 사용 가능
@@ -74,8 +75,12 @@ protected:
 														// AMarinPlayer → 화면 빨간 플래시
 														// ABaseEnemy → ???
 	// ================ 컴포넌트 ================
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
+	TObjectPtr<USceneComponent> RootComp;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UStaticMeshComponent> MeshComp;
 
 private:
 	bool bIsDead;

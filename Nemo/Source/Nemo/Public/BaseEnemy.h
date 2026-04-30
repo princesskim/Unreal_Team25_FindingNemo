@@ -30,7 +30,7 @@ public:
 	
 	virtual void BeginPlay() override;
 	
-	// ============== AI 인터페이스 ==============
+	// ============ AI 인터페이스 ============
 	UFUNCTION(BlueprintCallable, Category="Enemy")
 	void EnterTelegraphState();
 	
@@ -42,7 +42,21 @@ public:
 	void EnterStunnedState(float InStunDuration);
 	
 	
-	// ============== 상태 조회 ==============
+	UFUNCTION(BlueprintCallable, Category="Enemy")
+	void ResetEnemyState(EEnemyState NewState);							// 사망·외부 이슈로 인해 진행 중인 행동 강제 중단
+																		// 타이머 정리, 데칼 정리, 상태 초기화 등을 해주지 않으면 버그 발생
+	
+	
+	// ============== Getter ==============
+	UFUNCTION(BlueprintPure, Category="Enemy")
+	float GetTelegraphDuration() const { return TelegraphDuration; }
+
+	UFUNCTION(BlueprintPure, Category="Enemy")
+	float GetChargeDuration() const { return ChargeDuration; }
+
+	UFUNCTION(BlueprintPure, Category="Enemy")
+	float GetStunDuration() const { return StunDuration; }
+	
 	UFUNCTION(BlueprintPure, Category="Enemy")
 	EEnemyState GetEnemyState() const;
 	
@@ -51,10 +65,6 @@ public:
 																		// 머티리얼에서 데칼 애니메이션에 활용 가능
 																		// 원 커짐 + 밝기 증가 + 색 변화 등
 
-	UFUNCTION(BlueprintCallable, Category="Enemy")
-	void ResetEnemyState(EEnemyState NewState);							// 사망·외부 이슈로 인해 진행 중인 행동 강제 중단
-																		// 타이머 정리, 데칼 정리, 상태 초기화 등을 해주지 않으면 버그 발생
-	
 protected:
     virtual void Tick(float DeltaTime) override;
 
