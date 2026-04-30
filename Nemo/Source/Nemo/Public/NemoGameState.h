@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "ActorSpawnRow.h"
 #include "NemoGameState.generated.h"
 
 UCLASS()
@@ -25,6 +26,16 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Level")
 	TArray<FName> LevelMapNames;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
+	int32 ItemToSpawn;
+	
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
+	int32 TargetToSpawn;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
+	int32 CreatureToSpawn;
+
+
 	FTimerHandle LevelTimerHandle;
 	FTimerHandle HUDUpdateTimerHandle;
 	
@@ -34,6 +45,8 @@ public:
 	void AddScore(int32 Amount);
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	void OnGameOver();
+
+	void RandomSpawn(EActorType SpawnType, int32 SpawnNum,TArray<AActor*> FoundVolumes);
 
 	void StartLevel();
 	void OnLevelTimeUp();

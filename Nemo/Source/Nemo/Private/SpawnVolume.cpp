@@ -3,6 +3,7 @@
 
 #include "SpawnVolume.h"
 #include "Components/BoxComponent.h"
+#include "ActorSpawnRow.h"
 
 // Sets default values
 ASpawnVolume::ASpawnVolume()
@@ -18,7 +19,7 @@ ASpawnVolume::ASpawnVolume()
 
 }
 
-AActor* ASpawnVolume::SpawnRandomItem(FName ActorType)
+AActor* ASpawnVolume::SpawnRandomItem(EActorType ActorType)
 {
 	if (FActorSpawnRow* SelectedRow = GetRandomItem(ActorType))
 	{
@@ -48,16 +49,18 @@ void ASpawnVolume::Tick(float DeltaTime)
 
 FVector ASpawnVolume::GetRandomPointInVolume() const
 {
-	FVector BoxExtent = SpawningBox->GetScaledBoxExtent();
+	
+	FVector BoxExtentPlus = GetActorLocation() + SpawningBox->GetScaledBoxExtent();
+	FVector BoxExtentMinus = GetActorLocation() - SpawningBox->GetScaledBoxExtent();
 	//박스 컴포넌트의 절반 길이만큼을 반환한다.
 	//200, 100, 50 Scale (2,1,1) -> 400,100,50
 	//중심부터 끝까지의 거리
 	FVector BoxOrigin = SpawningBox->GetComponentLocation();
 	//
 	return FVector(
-		FMath::FRandRange(-BoxExtent.X, BoxExtent.X)
-		, FMath::FRandRange(-BoxExtent.Y, BoxExtent.Y)
-		, FMath::FRandRange(-BoxExtent.Z, BoxExtent.Z)
+		FMath::FRandRange(BoxExtentMinus.X, BoxExtentPlus.X)
+		, FMath::FRandRange(BoxExtentMinus.Y, BoxExtentPlus.Y)
+		, FMath::FRandRange(BoxExtentMinus.Z, BoxExtentPlus.Z)
 	);
 }
 
@@ -76,7 +79,9 @@ AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 	return SpawnedActor;
 }
 
-FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
+//ActorType은 Item(아이템), Target(플레이어 수집 목표), Creature(괴물)로 분류
+//자세한 사항은 SpawnRate 데이터 레이블 확인!
+FActorSpawnRow* ASpawnVolume::GetRandomItem(EActorType ActorType)
 {
 	if (!ActorDataTable) return nullptr;
 
@@ -96,8 +101,11 @@ FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
 		}
 	}
 
-	if (FilteredRows.Num() == 0) return nullptr;
-
+	if (FilteredRows.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%d"), FilteredRows.Num());
+		return nullptr;
+	}
 	// 2. 필터링된 목록에서 가중치 랜덤 선택
 	float RandomPivot = FMath::FRandRange(0.0f, TotalWeight);
 	float CurrentSum = 0.0f;

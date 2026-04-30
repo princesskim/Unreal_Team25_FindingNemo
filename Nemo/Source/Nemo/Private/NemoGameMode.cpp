@@ -2,8 +2,9 @@
 
 
 #include "NemoGameMode.h"
+#include "MarinPlayer.h"
 
 ANemoGameMode::ANemoGameMode()
 {
-
+	DefaultPawnClass = AMarinPlayer::StaticClass();
 }

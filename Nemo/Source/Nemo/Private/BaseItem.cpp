@@ -13,6 +13,7 @@ ABaseItem::ABaseItem()
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	Collision->SetupAttachment(Scene);
+	Collision->SetGenerateOverlapEvents(true);
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(Collision);
@@ -30,6 +31,8 @@ void ABaseItem::OnItemOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap 발생"));
+	UE_LOG(LogTemp, Warning, TEXT("OtherActor->ActorHasTag(): %d"), OtherActor->ActorHasTag("Player"));
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("OverLap!!!")));
