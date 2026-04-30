@@ -6,6 +6,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "BaseEnemyAI.h"
+#include "Kismet/GameplayStatics.h"
 
 ABaseEnemy::ABaseEnemy()
 {
@@ -37,12 +38,17 @@ ABaseEnemy::ABaseEnemy()
 	
 	TelegraphStartTime = 0.f;
 	
+	RotationInterpSpeed = 5.f;
+	
 	// =============== Decal 생성 ===============
 	TelegraphDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("TelegraphDecal"));
 	TelegraphDecal->SetupAttachment(RootComponent);
 	
 	TelegraphDecal->SetVisibility(false);													// 기본 숨김
 	TelegraphDecal->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));		// 바닥 투영
+	
+	TelegraphMaterial = nullptr;
+	TelegraphMID      = nullptr;
 }
 
 void ABaseEnemy::BeginPlay()
@@ -140,9 +146,11 @@ void ABaseEnemy::CheckChargeOverlap()
 	{
 		if (AMarinPlayer* Player = Cast<AMarinPlayer>(Actor))
 		{
-			Player->ApplyDamage(ChargeDamage, this);
-															// 충돌하면 ChargeDuration 남았어도, 즉시 경직으로 전환
+			GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 우선적으로 끄기
 			GetWorldTimerManager().ClearTimer(ChargeTimerHandle); // 타이머 끄기
+			
+			Player->ApplyDamage(ChargeDamage, this);
+			// 충돌하면 ChargeDuration 남았어도, 즉시 경직으로 전환
 			ExitChargingState();
 			return;
 		}
@@ -151,8 +159,6 @@ void ABaseEnemy::CheckChargeOverlap()
 
 void ABaseEnemy::ExitChargingState()
 {
-	if (!IsAlive()) return;
-	
 	GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 끄기
 	
 	if (UFloatingPawnMovement* Mov =
@@ -161,6 +167,8 @@ void ABaseEnemy::ExitChargingState()
 		Mov->Velocity = FVector::ZeroVector;
 		Mov->MaxSpeed = NormalSpeed;
 	}
+	
+	if (!IsAlive()) return;
 	
 	SetState(EEnemyState::Stunned);							// Stunned 상태로 바로 전환
 	EnterStunnedState(StunDuration * StunMultiplier);
@@ -210,8 +218,33 @@ void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (CurrentState == EEnemyState::Telegraph)
-		UpdateTelegraphDecal();
+	if (CurrentState == EEnemyState::Telegraph) UpdateTelegraphDecal();		// 데칼 업데이트
+	
+	
+	// Enemy가 플레이어를 바라보도록
+				// Idle        → 플레이어 방향으로 부드럽게 회전 (위치 고정)
+				// Telegraph   → 플레이어 방향으로 계속 회전 (위치 고정)
+				// Charging    → EnterChargingState 시점 방향 고정 + 직진
+				// Stunned     → 회전·이동 없음 (얼음)
+				// Dead        → 아무것도 안 함
+	
+	// 즉, Idle, Telegraph일 때만 메쉬 회전
+	if (CurrentState != EEnemyState::Idle &&CurrentState != EEnemyState::Telegraph) return;
+	
+	APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (!Player) return;
+	
+	const FVector TargetDirection = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	const FRotator TargetRotator = TargetDirection.Rotation();
+	const FRotator CurrentRotation = GetActorRotation();
+	
+	const FRotator NewRotation = FMath::RInterpTo(
+		CurrentRotation, 
+		TargetRotator, 
+		DeltaTime, 
+		RotationInterpSpeed);
+	
+	SetActorRotation(NewRotation);
 }
 
 void ABaseEnemy::UpdateTelegraphDecal()

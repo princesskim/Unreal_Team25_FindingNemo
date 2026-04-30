@@ -6,12 +6,22 @@
 #include "AIController.h"
 #include "BaseEnemyAI.generated.h"
 
+/*
+ * [BaseEnemyAI 역할]
+ *	1. AI 소유 및 제어
+ *	2. Tick 기반 판단 (타겟 감지, 공격 사이클 실행)
+ *	3. 상태 관리
+ *
+ *
+ * [사용 방법]
+	BP_Lionfish 열기
+	→ AI Controller Class : BaseEnemyAI
+	→ 레벨에 배치된 BP_Lionfish 선택
+		→ 디테일 패널 → AI 카테고리
+			→ PlayerDetectionRadius : 1200
+			→ AttackCooldownTime    : 2.5
+ */
 
-// AI 소유 및 제어
-// Tick 기반 판단
-	// 타겟 감지
-	// 공격 사이클 실행
-// 상태 관리
 
 class ABaseEnemy;
 

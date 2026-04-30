@@ -136,7 +136,9 @@ private:
 	
 	void UpdateTelegraphDecal();
 	
-	
 	bool bIsStunned;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy")
+	float RotationInterpSpeed;
 	
 };
