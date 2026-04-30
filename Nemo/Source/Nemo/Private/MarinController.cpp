@@ -6,7 +6,7 @@
 #include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/TextBlock.h"
+#include "Components/Button.h"
 
 AMarinController::AMarinController()
       : InputMappingContext(nullptr),
@@ -42,7 +42,7 @@ void AMarinController::BeginPlay()
 	}
 	
 	FString CurrentMapName = GetWorld()->GetMapName();
-	if (CurrentMapName.Contains("MenuLevel"))
+	if (CurrentMapName.Contains("MainMenuLevel"))
 	{
 		ShowMainMenu(false);
 	}
@@ -75,18 +75,6 @@ void AMarinController::ShowMainMenu(bool bIsRestart)
 			bShowMouseCursor = true;
 			SetInputMode(FInputModeUIOnly());
 		}
-		
-		if (UTextBlock* ButtonText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText"))))
-		{
-			if (bIsRestart)
-			{
-				ButtonText->SetText(FText::FromString(TEXT("Restart")));
-			}
-			else
-			{
-				ButtonText->SetText(FText::FromString(TEXT("Start")));
-			}
-		}
 	}
 }
 
@@ -98,7 +86,7 @@ void AMarinController::StartGame()
 		NemoGameInstance->TotalScore = 0;
 	}
 	
-	UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
+	UGameplayStatics::OpenLevel(GetWorld(), FName("TESTMAP"));
 }
 
 void AMarinController::ShowGameHUD()
@@ -132,6 +120,8 @@ void AMarinController::ShowGameHUD()
 			{
 				NemoGameState->UpdateHUD();
 			}
+			
+			ShowNarrationPanel();
 		}
 	}
 }
@@ -139,6 +129,36 @@ void AMarinController::ShowGameHUD()
 UUserWidget* AMarinController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
+}
+
+void AMarinController::ShowNarrationPanel()
+{
+	if (!HUDWidgetInstance) return;
+	
+	UFunction* PlayAnimFunc = HUDWidgetInstance->FindFunction(FName("PlayNarrationAnimation"));
+	if (PlayAnimFunc)
+	{
+		HUDWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(
+		NarrationTimerHandle,
+		this,
+		&AMarinController::HideNarrationPanel,
+		5.0f,
+		false
+	);
+}
+
+
+void AMarinController::HideNarrationPanel()
+{
+	if (!HUDWidgetInstance) return;
+
+	if (UWidget* Panel = HUDWidgetInstance->GetWidgetFromName(TEXT("NarrationPanel")))
+	{
+		Panel->SetRenderOpacity(0.0f);
+	}
 }
 
 void AMarinController::ShowLevelClear()

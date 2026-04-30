@@ -88,7 +88,7 @@ void ANemoGameState::StartLevel()
     {
         if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
         {
-            //MarinController->ShowGameHUD();
+            MarinController->ShowGameHUD();
         }
     }
 

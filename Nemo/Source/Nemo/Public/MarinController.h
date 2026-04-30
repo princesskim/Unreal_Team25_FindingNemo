@@ -59,6 +59,11 @@ public:
 	UFUNCTION(BlueprintPure, Category="HUD")
 	UUserWidget* GetHUDWidget() const;
 	
+	FTimerHandle NarrationTimerHandle;
+
+	void ShowNarrationPanel();
+	void HideNarrationPanel();
+	
 	
 	// ============== 레벨 클리어 위젯 ==============
 																					// 웨이브 클리어 시 표시
