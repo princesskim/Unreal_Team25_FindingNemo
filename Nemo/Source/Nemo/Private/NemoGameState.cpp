@@ -65,6 +65,7 @@ void ANemoGameState::OnGameOver()
     {
         if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
         {
+            MarinController->ShowLevelClear();
             MarinController->SetPause(true);
         }
     }
@@ -300,7 +301,7 @@ void ANemoGameState::UpdateHUD()
 				}
 
 				if (UTextBlock* LevelIndexText = Cast<UTextBlock>
-					(HUDWidget->GetWidgetFromName(TEXT("wave"))))
+					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
 					(FString::Printf(TEXT("%d"), CurrentWave )));
