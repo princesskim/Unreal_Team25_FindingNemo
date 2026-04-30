@@ -76,6 +76,8 @@ AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 	return SpawnedActor;
 }
 
+//ActorType은 Item(아이템), Target(플레이어 수집 목표), Creature(괴물)로 분류
+//자세한 사항은 SpawnRate 데이터 레이블 확인!
 FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
 {
 	if (!ActorDataTable) return nullptr;
@@ -96,8 +98,11 @@ FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
 		}
 	}
 
-	if (FilteredRows.Num() == 0) return nullptr;
-
+	if (FilteredRows.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%d"), FilteredRows.Num());
+		return nullptr;
+	}
 	// 2. 필터링된 목록에서 가중치 랜덤 선택
 	float RandomPivot = FMath::FRandRange(0.0f, TotalWeight);
 	float CurrentSum = 0.0f;

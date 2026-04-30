@@ -1,4 +1,4 @@
-#include "NemoGameState.h"
+ï»¿#include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "MarinController.h"
 #include "Kismet/GamePlayStatics.h"
@@ -12,6 +12,10 @@ ANemoGameState::ANemoGameState()
 	LevelDuration = 300.f;
 	CurrentLevelIndex = 0;
 	MaxLevels = 3;
+
+	TargetToSpawn = 0;
+	ItemToSpawn = 0;
+	CreatureToSpawn = 0;
 }
 
 void ANemoGameState::BeginPlay()
@@ -47,6 +51,23 @@ void ANemoGameState::OnGameOver()
 	}
 }
 
+void ANemoGameState::RandomSpawn(FName SpawnType, int32 SpawnNum, TArray<AActor*> FoundVolumes)
+{
+
+	for (int32 i = 0; i < SpawnNum; i++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]);
+			if (SpawnVolume)
+			{
+				AActor* SpawnedActor = SpawnVolume->SpawnRandomItem(SpawnType);
+
+			}
+		}
+	}
+}
+
 void ANemoGameState::StartLevel()
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
@@ -69,24 +90,10 @@ void ANemoGameState::StartLevel()
 	TArray<AActor*> FoundVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
 
-	const int32 ItemToSpawn = 40;
-
-	for (int32 i = 0; i < ItemToSpawn; i++)
-	{
-		if (FoundVolumes.Num() > 0)
-		{
-			ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]);
-			if (SpawnVolume)
-			{
-				//AActor* SpawnedActor = SpawnVolume->SpawnRandomItem();
-				//if (SpawnedActor && SpawnedActor->IsA(~~::StaticClass()))
-				{
-					//~~Count++;
-				}
-			}
-		}
-	}
-	// ½Ã°£ Á¦ÇÑÀ» µÑ¶§ »ç¿ë ¾ÈÇÏ¸é Á¦°Å ¿¹Á¤
+	RandomSpawn("Item", ItemToSpawn, FoundVolumes);
+	RandomSpawn("Creature", CreatureToSpawn, FoundVolumes);
+	RandomSpawn("Target", TargetToSpawn, FoundVolumes);
+	// ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¶ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/*
 	GetWorldTimerManager().SetTimer(
 		LevelTimerHandle,
@@ -142,7 +149,7 @@ void ANemoGameState::UpdateHUD()
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
-			// UI ±¸Çö°ú Å°°ª¿¡ µû¶ó ÀÏºÎ º¯°æ ¿¹Á¤
+			// UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ïºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			/*
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
