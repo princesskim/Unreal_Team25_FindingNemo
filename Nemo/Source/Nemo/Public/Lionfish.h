@@ -13,7 +13,4 @@ class NEMO_API ALionfish : public ABaseEnemy
 	
 public:
 	ALionfish();
-	
-protected:
-	virtual void EnterChargingState() override;
 };

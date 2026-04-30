@@ -15,7 +15,6 @@ public:
 	ABossShark();
 	
 protected:
-	virtual void EnterChargingState() override;
 	virtual void CheckChargeOverlap() override;	
 	
 private:

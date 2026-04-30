@@ -12,6 +12,9 @@ ABaseEnemyAI::ABaseEnemyAI()
 	AttackCooldownTime = 2.5f;
 	bIsAttackBlocked = false;
 	PossessedEnemy = nullptr;
+	
+	bSetControlRotationFromPawnOrientation = false;				// true: Pawn → Controller 회전 동기화
+																// false: Controller → Pawn 방향 제어 유지
 }
 
 void ABaseEnemyAI::OnPossess(APawn* InPawn)						// 언리얼이 넘겨주는 Pawn

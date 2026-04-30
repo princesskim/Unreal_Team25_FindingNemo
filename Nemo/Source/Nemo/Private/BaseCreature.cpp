@@ -2,6 +2,7 @@
 
 #include "BaseCreature.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 ABaseCreature::ABaseCreature()
 {
@@ -13,6 +14,8 @@ ABaseCreature::ABaseCreature()
 	bIsDead = false;
 	
 	// ============= 컴포넌트 생성 =============
+	MovementComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComp"));
+	
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = RootComp;
 	

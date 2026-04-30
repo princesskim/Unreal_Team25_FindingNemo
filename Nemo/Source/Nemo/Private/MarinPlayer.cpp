@@ -46,7 +46,6 @@ AMarinPlayer::AMarinPlayer()
 	
 	
 	// ============= 컴포넌트 생성 =============
-	MovementComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComp"));
 	MovementComp->MaxSpeed = SwimSpeed;
 	MovementComp->Acceleration = 1200.f;
 	MovementComp->Deceleration = 800.f;

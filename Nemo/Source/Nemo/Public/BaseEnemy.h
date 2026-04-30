@@ -20,6 +20,20 @@ enum class EEnemyState : uint8
 	Dead										// 사망
 };
 
+/*
+ 
+Lionfish
+	└── GetOverlappingActors
+			└── 메시 콜리전이 실제로 겹친 액터만 감지
+			└── 직접 부딪혀야 데미지
+
+BossShark
+	└── FVector::Dist
+			└── ChargeRadius(300) 반경 안에 있으면 감지
+			└── 직접 안 부딪혀도 가까이만 있으면 데미지
+			
+ */
+
 UCLASS(Abstract)
 class NEMO_API ABaseEnemy : public ABaseCreature
 {
@@ -35,8 +49,7 @@ public:
 	void EnterTelegraphState();
 	
 	UFUNCTION(BlueprintCallable, Category="Enemy")
-	virtual void EnterChargingState();									// ALionfish-직선 돌진, ASharkBoss-광역 돌진
-																		// 오버라이드하여 돌진 방향과 스피드를 지정
+	virtual void EnterChargingState();									// 오버라이드하여 돌진 스피드를 지정
 
 	UFUNCTION(BlueprintCallable, Category="Enemy")
 	void EnterStunnedState(float InStunDuration);
@@ -65,6 +78,10 @@ public:
 																		// 머티리얼에서 데칼 애니메이션에 활용 가능
 																		// 원 커짐 + 밝기 증가 + 색 변화 등
 
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy")
+	float RotationInterpSpeed;
+	
 protected:
     virtual void Tick(float DeltaTime) override;
 
@@ -74,7 +91,6 @@ protected:
 	void SetState(EEnemyState NewState);
 
 	virtual void CheckChargeOverlap();									// 돌진 중 플레이어 충돌 감지 + 데미지 적용
-																		// ASharkBoss - 광역 감지는 오버랩액터와 달라서 오버라이드 필요
 	
 
 	// ========= Telegraph 데칼 컴포넌트 =========
@@ -101,7 +117,7 @@ protected:
 	float ChargeDuration;
 	
     UPROPERTY(EditDefaultsOnly, Category="Enemy|Combat")
-    float ChargeDamage;													// 돌진+충돌로 플레이어에게 입히는 데미지
+    float ChargeDamage;													// 돌진->충돌로 플레이어에게 입히는 데미지
 	
 	UPROPERTY(EditDefaultsOnly, Category="Enemy|Charging")
 	float NormalSpeed;
@@ -137,8 +153,4 @@ private:
 	void UpdateTelegraphDecal();
 	
 	bool bIsStunned;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Enemy")
-	float RotationInterpSpeed;
-	
 };
