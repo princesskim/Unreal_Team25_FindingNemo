@@ -114,7 +114,10 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     if (CurrentWave == 1)
     {
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
-        BabyFishCount = TargetToSpawn;
+
+        TArray<AActor*> SpawnedFish;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
+        BabyFishCount = SpawnedFish.Num();
 
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
             FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -123,7 +126,10 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     {
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
-        BabyFishCount = TargetToSpawn;
+        
+        TArray<AActor*> SpawnedFish;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
+        BabyFishCount = SpawnedFish.Num();
 
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
             FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -132,6 +138,18 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     {
         if (BossSharkClass)
         {
+            RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
+
+            TArray<AActor*> SpawnedFish;
+            UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
+            BabyFishCount = SpawnedFish.Num();
+
+            GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
+                FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+
+            /*
             FActorSpawnParameters SpawnParams;
             GetWorld()->SpawnActor<AActor>(
                 BossSharkClass,
@@ -140,6 +158,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
                 SpawnParams
             );
             GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Boss Spawned!"));
+            */
         }
     }
 }
