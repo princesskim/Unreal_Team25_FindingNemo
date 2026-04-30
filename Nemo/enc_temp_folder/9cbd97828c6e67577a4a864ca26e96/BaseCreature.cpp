@@ -94,6 +94,4 @@ void ABaseCreature::OnDeath()
 
 void ABaseCreature::OnDamaged(float Amount, AActor* Causer)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red,
-		FString::Printf(TEXT("Hit! Damage: %.1f"), Amount));
 }																// 자식 클래스에서 override
