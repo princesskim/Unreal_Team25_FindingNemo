@@ -62,17 +62,17 @@ void AJellyfishTrap::OnDeath()
 
 void AJellyfishTrap::OnDamaged(float Amount, AActor* Causer)
 {
-    // Å×½ºÆ® ·Î±×
+    // ï¿½×½ï¿½Æ® ï¿½Î±ï¿½
     GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red,
         FString::Printf(TEXT("JellyfishTrap Hit! Damage: %.1f"), Amount));
-    // »ö»ó ±ôºýÀÓ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     StartHitFlash();
 
-    // ³Ë¹é : °ø°ÝÀÚ ¹æÇâ¿¡¼­ ¹Ð·Á³²
+    // ï¿½Ë¹ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ï¿½ï¿½ ï¿½Ð·ï¿½ï¿½ï¿½
     if (Causer)
     {
         FVector KnockbackDir = (GetActorLocation() - Causer->GetActorLocation()).GetSafeNormal();
-        // APawnÀÇ LaunchPawn ´ë½Å Á÷Á¢ velocity Á¶ÀÛ
+        // APawnï¿½ï¿½ LaunchPawn ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ velocity ï¿½ï¿½ï¿½ï¿½
         if (UPawnMovementComponent* MoveComp = GetMovementComponent())
         {
             MoveComp->Velocity += KnockbackDir * KnockbackStrength;
@@ -82,10 +82,10 @@ void AJellyfishTrap::OnDamaged(float Amount, AActor* Causer)
 
 void AJellyfishTrap::StartHitFlash()
 {
-    if (MeshComponent)
+    if (MeshComp)
     {
-        // ¸ÓÅÍ¸®¾ó ÀÛ¾÷ ÇÊ¿ä
-        MeshComponent->SetScalarParameterValueOnMaterials(TEXT("HitFlash"), 1.0f);
+        // ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ ï¿½Ê¿ï¿½
+        MeshComp->SetScalarParameterValueOnMaterials(TEXT("HitFlash"), 1.0f);
     }
 
     GetWorld()->GetTimerManager().SetTimer(
@@ -97,12 +97,12 @@ void AJellyfishTrap::StartHitFlash()
     );
 }
 
-// ÇÇ°Ý »ö»ó ¿ø»óÅÂ·Î µ¹¸®±â
+// ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void AJellyfishTrap::EndHitFlash()
 {
-    if (MeshComponent)
+    if (MeshComp)
     {
-        MeshComponent->SetScalarParameterValueOnMaterials(TEXT("HitFlash"), 0.0f);
+        MeshComp->SetScalarParameterValueOnMaterials(TEXT("HitFlash"), 0.0f);
     }
 }
 

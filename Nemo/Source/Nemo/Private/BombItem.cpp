@@ -19,7 +19,7 @@ ABombItem::ABombItem()
 
 void ABombItem::ActivateItem(AActor* Activator)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("[BombItem] 활성화 / 폭발 타이머 시작"));
+    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("[BombItem] Activate / Timer Start"));
 
 	GetWorld()->GetTimerManager().SetTimer(
 		ExplosionTimerHandle,
@@ -32,7 +32,7 @@ void ABombItem::ActivateItem(AActor* Activator)
 
 void ABombItem::Explode()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("[BombItem] 폭발!"));
+    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("[BombItem] Explode!"));
 
     TArray<AActor*> OverlappingActors;
     ExplosionCollision->GetOverlappingActors(OverlappingActors);
@@ -45,7 +45,7 @@ void ABombItem::Explode()
             ABaseCreature* Creature = Cast<ABaseCreature>(Actor);
             if (Creature)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("[BombItem] 플레이어 피격 / 데미지: %d"), ExplosionDamage));
+                GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("[BombItem] Player Hit / Damage: %d"), ExplosionDamage));
                 Creature->ApplyDamage(ExplosionDamage, this);
             }
         }

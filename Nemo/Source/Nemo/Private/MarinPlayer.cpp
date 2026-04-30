@@ -13,6 +13,8 @@
 
 AMarinPlayer::AMarinPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	MaxHP = 100.f;
 	
 	// =========== 이동 파라미터 초기화 ===========
@@ -66,7 +68,7 @@ AMarinPlayer::AMarinPlayer()
 	
 	// ============= 위젯 붙이기 =============
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
-	OverheadWidget->SetupAttachment(MeshComponent);
+	OverheadWidget->SetupAttachment(RootComponent);
 	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
 	
 }
