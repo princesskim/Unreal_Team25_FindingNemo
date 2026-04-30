@@ -18,6 +18,18 @@ ASpawnVolume::ASpawnVolume()
 
 }
 
+AActor* ASpawnVolume::SpawnRandomItem(FName ActorType)
+{
+	if (FActorSpawnRow* SelectedRow = GetRandomItem(ActorType))
+	{
+		if (UClass* ActualClass = SelectedRow->ActorClass.Get())
+		{
+			return SpawnItem(ActualClass);
+		}
+	}
+	return nullptr;
+}
+
 // Called when the game starts or when spawned
 void ASpawnVolume::BeginPlay()
 {
@@ -45,7 +57,7 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 	return FVector(
 		FMath::FRandRange(-BoxExtent.X, BoxExtent.X)
 		, FMath::FRandRange(-BoxExtent.Y, BoxExtent.Y)
-		, FMath::FRandRange(0, BoxExtent.Z)
+		, FMath::FRandRange(-BoxExtent.Z, BoxExtent.Z)
 	);
 }
 
@@ -62,4 +74,39 @@ AActor* ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 	);
 
 	return SpawnedActor;
+}
+
+FActorSpawnRow* ASpawnVolume::GetRandomItem(FName ActorType)
+{
+	if (!ActorDataTable) return nullptr;
+
+	TArray<FActorSpawnRow*> AllRows;
+	ActorDataTable->GetAllRows<FActorSpawnRow>(TEXT(""), AllRows);
+
+	// 1. 현재 구역 타입에 맞는 아이템만 필터링
+	TArray<FActorSpawnRow*> FilteredRows;
+	float TotalWeight = 0.0f;
+
+	for (auto* Row : AllRows)
+	{
+		if (Row->ActorType == ActorType)
+		{
+			FilteredRows.Add(Row);
+			TotalWeight += Row->SpawnWeight;
+		}
+	}
+
+	if (FilteredRows.Num() == 0) return nullptr;
+
+	// 2. 필터링된 목록에서 가중치 랜덤 선택
+	float RandomPivot = FMath::FRandRange(0.0f, TotalWeight);
+	float CurrentSum = 0.0f;
+
+	for (auto* Row : FilteredRows)
+	{
+		CurrentSum += Row->SpawnWeight;
+		if (RandomPivot <= CurrentSum) return Row;
+	}
+
+	return nullptr;
 }

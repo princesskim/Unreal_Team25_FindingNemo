@@ -13,7 +13,9 @@ UCLASS()
 class NEMO_API ANemoGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
-	void StartLevel();
-	void EndLevel();
+
+public:
+	ANemoGameMode();
+
+
 };

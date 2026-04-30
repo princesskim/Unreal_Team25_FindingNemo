@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ActorSpawnRow.h"
 #include "SpawnVolume.generated.h"
 
 class UBoxComponent;
@@ -24,6 +25,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	UBoxComponent* SpawningBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	UDataTable* ActorDataTable;
+
+	AActor* SpawnRandomItem(FName ActorType);
+	//FActorSpawnRow* GetRandomItem() const;
+	FActorSpawnRow* GetRandomItem(FName InType);
 
 
 

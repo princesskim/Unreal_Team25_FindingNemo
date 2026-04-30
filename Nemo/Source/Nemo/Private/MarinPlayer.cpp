@@ -1,6 +1,7 @@
 // MarinPlayer.cpp
 
 #include "MarinPlayer.h"
+#include "BaseEnemy.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -267,6 +268,21 @@ void AMarinPlayer::StartDash()
 		DamageImmuneHandle, this,
 		&AMarinPlayer::EndDashImmune,
 		DamageImmuneDuration, false);
+	
+	// 주변 경직된 적 처치 판정
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, ABaseEnemy::StaticClass());
+	
+	for (AActor* Actor : OverlappingActors)
+	{
+		if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(Actor))
+		{
+			if (Enemy->GetEnemyState() == EEnemyState::Stunned)
+			{
+				Enemy->KillInstantly();
+			}
+		}
+	}
 }
 
 void AMarinPlayer::EndDash()
