@@ -1,4 +1,4 @@
-// BaseCreature.cpp
+﻿// BaseCreature.cpp
 
 #include "BaseCreature.h"
 #include "Components/StaticMeshComponent.h"

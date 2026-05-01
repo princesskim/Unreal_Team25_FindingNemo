@@ -1,8 +1,10 @@
-// MarinController.cpp
+﻿// MarinController.cpp
 
 #include "MarinController.h"
+#include "MarinPlayer.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "NemoHUDWidget.h"
 #include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -143,6 +145,19 @@ void AMarinController::ShowGameHUD()
 UUserWidget* AMarinController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
+}
+
+void AMarinController::UpdateHUDWidget()
+{
+	if (UNemoHUDWidget* NemoHUDWidget = Cast<UNemoHUDWidget>(HUDWidgetInstance))
+	{
+		if (AMarinPlayer* TempPlayer = Cast<AMarinPlayer>(GetPawn()))
+		{
+			float CurrentHPPercent = TempPlayer->GetHealthPercent();
+			NemoHUDWidget->UpdateHPBar(CurrentHPPercent);
+		}
+	}
+
 }
 
 void AMarinController::ShowNarrationPanel()

@@ -1,4 +1,4 @@
-// MarinPlayer.h
+﻿// MarinPlayer.h
 
 #pragma once
 
@@ -25,6 +25,8 @@ public:
 	virtual bool IsDamageImmune() const override;
 	
 	virtual void BeginPlay() override;
+
+	virtual void OnDamaged(float Amount, AActor* Causer) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadWidget;
@@ -56,7 +58,7 @@ protected:
 	
 	virtual void OnDeath() override;	
 	
-	virtual void OnDamaged(float Amount, AActor* Causer) override;
+	
 	
 	// ================ 컴포넌트 ================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")

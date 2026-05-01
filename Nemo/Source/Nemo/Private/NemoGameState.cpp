@@ -1,17 +1,20 @@
 ﻿#include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "MarinController.h"
+#include "MarinPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "BabyFish.h"
 #include "BombItem.h"
 #include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
+#include "NemoHUDWidget.h"
 
 ANemoGameState::ANemoGameState()
 {
     Score = 0;
     LevelDuration = 300.f;
+    TimeDamage = 0.1f;
     CurrentLevelIndex = 0;
     MaxLevels = 3;
     TargetToSpawn = 0;
@@ -38,6 +41,14 @@ void ANemoGameState::BeginPlay()
         this,
         &ANemoGameState::UpdateHUD,
         0.1f,
+        true
+    );
+
+    GetWorldTimerManager().SetTimer(
+        LevelTimerHandle,
+        this,
+        &ANemoGameState::ApplyTimeDamge,
+        TimeDamage,
         true
     );
 }
@@ -105,6 +116,8 @@ void ANemoGameState::StartLevel()
             MarinController->ShowGameHUD();
         }
     }
+
+    StartTime = GetWorld()->GetTimeSeconds();
 
     UpdateHUD();
 
@@ -199,6 +212,20 @@ void ANemoGameState::StartWave(int32 WaveIndex)
             GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Boss Spawned!"));
             */
         }
+    }
+}
+
+void ANemoGameState::ApplyTimeDamge()
+{
+    TArray<AActor*> RemainingPlayers;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMarinPlayer::StaticClass(), RemainingPlayers);
+    for (AActor* Actor : RemainingPlayers)
+    {
+        if (AMarinPlayer* Player = Cast<AMarinPlayer>(Actor))
+        {
+            Player->ApplyDamage(TimeDamage, nullptr);
+        }
+        
     }
 }
 
@@ -307,7 +334,7 @@ void ANemoGameState::UpdateHUD()
                 if (UTextBlock* TimeText = Cast<UTextBlock>
                     (HUDWidget->GetWidgetFromName(TEXT("Time"))))
                 {
-                    float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+                    float RemainingTime = GetWorld()->GetTimeSeconds() - StartTime;
                     TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
                 }
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
@@ -340,6 +367,10 @@ void ANemoGameState::UpdateHUD()
                     LevelIndexText->SetText(FText::FromString
                     (FString::Printf(TEXT("%d"), MinBabyFishCount)));
                 }
+
+                //HP 업데이트
+                MarinController->UpdateHUDWidget();
+                
 			}
 		}
 	}

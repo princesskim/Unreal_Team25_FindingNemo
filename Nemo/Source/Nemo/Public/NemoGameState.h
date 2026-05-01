@@ -30,6 +30,13 @@ public:
     UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
     int32 CreatureToSpawn;
 
+
+    //================ Time ====================
+    UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "TIme")
+    float TimeDamage;
+
+    float StartTime;
+
     // ================ Wave ================
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
     int32 CurrentWave;
@@ -63,9 +70,11 @@ public:
     void RandomSpawn(EActorType SpawnType, int32 SpawnNum, TArray<AActor*> FoundVolumes);
     void StartLevel();
     void StartWave(int32 WaveIndex);
+    void ApplyTimeDamge();
     void OnWaveClear();
     void ClearWaveActors();
     void OnLevelTimeUp();
     void EndLevel();
     void UpdateHUD();
+    
 };

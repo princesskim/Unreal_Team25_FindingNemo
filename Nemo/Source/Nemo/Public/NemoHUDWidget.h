@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,7 +16,7 @@ class NEMO_API UNemoHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void UpdateHPBar(float CurrentHP, float MaxHP);
+	void UpdateHPBar(float HPPercent);
 
 protected:
 	UPROPERTY(meta = (BindWidget))

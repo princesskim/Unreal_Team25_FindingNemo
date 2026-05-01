@@ -6,17 +6,13 @@
 
 
 //HP�� ������Ʈ
-void UNemoHUDWidget::UpdateHPBar(float CurrentHP, float MaxHP)
+void UNemoHUDWidget::UpdateHPBar(float HPPercent)
 {
-	if (HPBar == nullptr || MaxHP <= 0.0f)
+	if (HPBar == nullptr || HPPercent <= 0.0f)
 	{
 		return;
 	}
 
-	float Percent = CurrentHP / MaxHP;
-
-	Percent = FMath::Clamp(Percent, 0.0f, 1.0f);
-
-	HPBar->SetPercent(Percent);
+	HPBar->SetPercent(HPPercent);
 
 }
