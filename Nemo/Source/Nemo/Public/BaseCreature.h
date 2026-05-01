@@ -68,6 +68,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Health")
 	void SetCurrentHP(float NewCurrentHP);
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UFloatingPawnMovement> MovementComp;
+	
 	
 protected:
 	virtual void BeginPlay() override;
@@ -84,8 +87,6 @@ protected:
 														// AMarinPlayer → 화면 빨간 플래시
 														// ABaseEnemy → ???
 	// ================ 컴포넌트 ================
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	TObjectPtr<UFloatingPawnMovement> MovementComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USceneComponent> RootComp;

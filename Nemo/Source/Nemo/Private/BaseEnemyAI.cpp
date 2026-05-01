@@ -38,7 +38,7 @@ void ABaseEnemyAI::Tick(float DeltaSeconds)						// 새 공격 조건 : 대기(I
 {
 	Super::Tick(DeltaSeconds);
 	
-	// if (!PossessedEnemy) return;
+	// if (!PossessedEnemy) return; 
 	// if (bIsAttackBlocked) return;
 	// if (PossessedEnemy->GetEnemyState() != EEnemyState::Idle) return;	// 이미 사이클 중
 	// if (GetDistanceToPlayer() > PlayerDetectionRadius) return;			// 감지 영역 밖
