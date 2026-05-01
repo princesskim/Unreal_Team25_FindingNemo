@@ -10,7 +10,10 @@
 
 ANemoGameState::ANemoGameState()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     Score = 0;
+    ElapsedTime = 0.f;
     LevelDuration = 300.f;
     CurrentLevelIndex = 0;
     MaxLevels = 3;
@@ -40,6 +43,12 @@ void ANemoGameState::BeginPlay()
         0.1f,
         true
     );
+}
+
+void ANemoGameState::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    ElapsedTime += DeltaTime;
 }
 
 int32 ANemoGameState::GetScore() const
@@ -119,6 +128,8 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         ClearWaveActors();
     }
 
+    float SpawnMultipiler = 1.0f + (WaveIndex - 1) * 0.5f;
+
     CurrentWave = WaveIndex;
 
     TArray<AActor*> FoundVolumes;
@@ -130,6 +141,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     if (CurrentWave == 1)
     {
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
 
         TArray<AActor*> SpawnedFish;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
@@ -143,21 +155,25 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     {
 
         // 스테이지 클리어 UI + 다음 스테이지 소개 
+
         AMarinController* MarinController = Cast<AMarinController>(
             UGameplayStatics::GetPlayerController(GetWorld(), 0)
         );
 
         if (MarinController)
         {
+            MarinController->SetNarrationTextByStage(CurrentWave);
             MarinController->ShowNarrationPanel();
         }
 
-        RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
         
         TArray<AActor*> SpawnedFish;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
         BabyFishCount = SpawnedFish.Num();
+        MaxBabyFishCount = SpawnedFish.Num();
 
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
             FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -172,18 +188,20 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 
         if (MarinController)
         {
+            MarinController->SetNarrationTextByStage(CurrentWave);
             MarinController->ShowNarrationPanel();
         }
 
         if (BossSharkClass)
         {
-            RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
             RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
-            RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Creature, CreatureToSpawn * 2, FoundVolumes);
 
             TArray<AActor*> SpawnedFish;
             UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
             BabyFishCount = SpawnedFish.Num();
+            MaxBabyFishCount = SpawnedFish.Num();
 
             GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
                 FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -307,8 +325,7 @@ void ANemoGameState::UpdateHUD()
                 if (UTextBlock* TimeText = Cast<UTextBlock>
                     (HUDWidget->GetWidgetFromName(TEXT("Time"))))
                 {
-                    float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), ElapsedTime)));
                 }
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
 					(HUDWidget->GetWidgetFromName(TEXT("ScoreText"))))
@@ -324,7 +341,7 @@ void ANemoGameState::UpdateHUD()
 					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("%d"), CurrentWave + 1)));
+					(FString::Printf(TEXT("%d"), CurrentWave)));
 				}
 
                 if (UTextBlock* LevelIndexText = Cast<UTextBlock>

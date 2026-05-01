@@ -24,26 +24,3 @@ ABossShark::ABossShark()
 	
 	ChargeRadius = 300.f;
 }
-
-
-
-void ABossShark::CheckChargeOverlap()
-{
-	if (GetEnemyState() != EEnemyState::Charging) return;
-	
-	APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (!Player) return;
-	
-	const float Dist = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
-	if (Dist <= ChargeRadius)								// 플레이어가 반경 내 거리 안에 있으면 감지
-	{
-		if (AMarinPlayer* MarinPlayer = Cast<AMarinPlayer>(Player))
-		{
-			GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 우선적으로 끄기
-			GetWorldTimerManager().ClearTimer(ChargeTimerHandle); // 타이머 끄기
-			
-			MarinPlayer->ApplyDamage(ChargeDamage, this);
-			ExitChargingState();
-		}
-	}
-}

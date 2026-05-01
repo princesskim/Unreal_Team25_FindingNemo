@@ -20,13 +20,7 @@ ABaseEnemy::ABaseEnemy()
 																								// 옵션 2.PlacedInWorld : 레벨에 “배치된 경우만” AI 생성
 																								// 옵션 3.Spawned : 런타임 Spawn된 경우만 AI 생성
 																								// 옵션 4.PlacedInWorldOrSpawned : 레벨에 있든, 스폰되든 무조건 AI 붙이기
-	/*bUseControllerRotationPitch = false;	
-	bUseControllerRotationYaw   = false;
-	bUseControllerRotationRoll  = false;*/					// Pawn, MovementComponent, Controller(특히 AIController)가 서로 경쟁적으로 회전을 갱신
-															// AI가 자체적으로 회전할 때, bUseControllerRotation~은 false로 해야함.
-															// 여기서는 틱마다 SetActorRotation, RInterpTo, 커스텀 회전 로직을 사용함
-	
-	
+
 	// ============== 상태 초기화 ==============
 	CurrentState = EEnemyState::Idle;
 	
@@ -47,14 +41,7 @@ ABaseEnemy::ABaseEnemy()
 	TelegraphStartTime = 0.f;
 	
 	RotationInterpSpeed = 10.f;
-	
-	// =============== Decal 생성 ===============
-	TelegraphDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("TelegraphDecal"));
-	TelegraphDecal->SetupAttachment(RootComponent);
-	
-	TelegraphDecal->SetVisibility(false);													// 기본 숨김
-	TelegraphDecal->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));		// 바닥 투영
-	
+
 	TelegraphMaterial = nullptr;
 	TelegraphMID      = nullptr;
 	
@@ -65,13 +52,11 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	TelegraphDecal->DecalSize = FVector(TelegraphDecalRadius);
-	
-	if (TelegraphMaterial)
-	{
-		TelegraphMID = TelegraphDecal->CreateDynamicMaterialInstance();						// 머테리얼 인스턴스 한 번만 생성
-	}
+
+	MeshComp->OnComponentHit.AddDynamic(this, &ABaseEnemy::CheckChargeOverlap);
+																					// AddDynamic : Hit 하면 기다렸다가 원하는 함수를 실행
+																					// UFUNCTION() 되어 있어야 함
+																					// 함수 시그니처 필요
 }
 
 // =============================================================
@@ -109,7 +94,7 @@ void ABaseEnemy::EnterTelegraphState()
 	SetState(EEnemyState::Telegraph);
 	TelegraphStartTime = GetWorld()->GetTimeSeconds();
 		
-	TelegraphDecal->SetVisibility(true);
+	// 여기서 Telegraph 마테리얼 보이게 하기
 	
 	GetWorldTimerManager().SetTimer(
 		TelegraphTimerHandle,this,
@@ -121,18 +106,16 @@ void ABaseEnemy::ExitTelegraphState()
 {
 	if (!IsAlive()) return;
 	
-	TelegraphDecal->SetVisibility(false);
+	// 여기서 Telegraph 마테리얼 끄기
 	SetState(EEnemyState::Charging);
 	
-	EnterChargingState();										// Charge 상태로 바로 전환
+	EnterChargingState();														// Charge 상태로 바로 전환
 }
 
-void ABaseEnemy::EnterChargingState()							// ChargeDuration 만큼 시간이 흐르는 중에, 돌진하며 플레이어와 충돌 감지
+void ABaseEnemy::EnterChargingState()											// ChargeDuration 만큼 시간이 흐르는 중에, 돌진하며 플레이어와 충돌 감지
 {
-	if (!IsAlive()) return;										// 텔레그래프 완료 시점 플레이어 방향 고정
-																// 이후 플레이어가 피해도 고정 방향으로 돌진
-	
-	//UE_LOG(LogTemp, Warning, TEXT("EnterChargingState 호출"));
+	if (!IsAlive()) return;														// 텔레그래프 완료 시점 플레이어 방향 고정
+																				// 이후 플레이어가 피해도 고정 방향으로 돌진
 	
 	APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (!Player) return;
@@ -143,7 +126,6 @@ void ABaseEnemy::EnterChargingState()							// ChargeDuration 만큼 시간이 �
 	
 	MovementComp->MaxSpeed = ChargeSpeed;
 	MovementComp->Velocity = Dir * ChargeSpeed;
-	//UE_LOG(LogTemp, Warning, TEXT("Velocity 주입 완료"));
 	
 	
 	GetWorldTimerManager().SetTimer(
@@ -151,48 +133,45 @@ void ABaseEnemy::EnterChargingState()							// ChargeDuration 만큼 시간이 �
 		&ABaseEnemy::ExitChargingState,
 		ChargeDuration, false);
 	
-	GetWorldTimerManager().SetTimer(
-		ChargeOverlapTimerHandle, this,
-		&ABaseEnemy::CheckChargeOverlap,
-		0.05f, true);							// 0.05s 간격으로 플레이어 충돌 반복 감지
-															// 자식에서 Super::ExecuteCharge() 호출하면
-															// 충돌감지 타이머 시작
+																				// 이제 자동 감지라서 '반복 감지 타이머' 없어도 됨
 }
 
-void ABaseEnemy::CheckChargeOverlap()
+void ABaseEnemy::CheckChargeOverlap(UPrimitiveComponent* HitComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	FVector NormalImpulse, 
+	const FHitResult& Hit)
 {
-	if (CurrentState != EEnemyState::Charging) return;
+																				// 부딪힐 때 비벼지니까 
+																					// 가능한 방법 1. 데미지를 진짜 조금씩 줘서 HP 부드럽게 깎이게 (채택!!!)
+																					// 가능한 방법 2. 타이머로 제약 걸어서 이 함수가 몇 초에 한번씩만 불리게 하거나
+																					// 아예 Hit 말고 콜리전 추가해서 하는 방법이 있지만, 빈공간 때문에 어색할 수도.
+																				
+	//if (CurrentState != EEnemyState::Charging) return;
 	
-	//돌진 중 플레이어와 오버랩하면 데이미를 줌
-	TArray<AActor*> OverlappingActors;
-	GetOverlappingActors(OverlappingActors, AMarinPlayer::StaticClass());			// 현재 Enemy와 겹친 Actor를 수집
-																						// 두 번째 인자로 클래스 필터 적용 가능
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit!"));
 	
-	for (AActor* Actor : OverlappingActors)
+	if (AMarinPlayer* Player = Cast<AMarinPlayer>(OtherActor))
 	{
-		if (AMarinPlayer* Player = Cast<AMarinPlayer>(Actor))
-		{
-			GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 우선적으로 끄기
-			GetWorldTimerManager().ClearTimer(ChargeTimerHandle); // 타이머 끄기
+		GetWorldTimerManager().ClearTimer(ChargeTimerHandle);
 			
-			Player->ApplyDamage(ChargeDamage, this);
-			// 충돌하면 ChargeDuration 남았어도, 즉시 경직으로 전환
-			ExitChargingState();
-			return;
-		}
+		Player->ApplyDamage(ChargeDamage, this);
+																				// 충돌하면 ChargeDuration 남았어도, 즉시 경직으로 전환
+		ExitChargingState();
+		return;
 	}
 }
 
 void ABaseEnemy::ExitChargingState()
 {
-	GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle); // 반복 타이머 끄기
+	GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle);				// 반복 타이머 끄기
 	
 	MovementComp->Velocity = FVector::ZeroVector;
 	MovementComp->MaxSpeed = NormalSpeed;
 	
 	if (!IsAlive()) return;
 	
-	SetState(EEnemyState::Stunned);							// Stunned 상태로 바로 전환
+	SetState(EEnemyState::Stunned);												// Stunned 상태로 바로 전환
 	EnterStunnedState(StunDuration * StunMultiplier);
 }
 
@@ -227,7 +206,7 @@ void ABaseEnemy::ResetEnemyState(EEnemyState NewState)
 	GetWorldTimerManager().ClearTimer(ChargeOverlapTimerHandle);
 	GetWorldTimerManager().ClearTimer(StunTimerHandle);
 	
-	TelegraphDecal->SetVisibility(false);
+	// Telegraph 마테리얼 끄기
 	
 	SetState(NewState);
 }
@@ -240,70 +219,17 @@ void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (CurrentState == EEnemyState::Telegraph) UpdateTelegraphDecal();		// 데칼 업데이트
-	
-	
-	// Enemy가 플레이어를 바라보도록
-				// Idle        → 플레이어 방향 추적 + 회전 (위치 고정)
-				// Telegraph   → 플레이어 방향 빠른 추적 + 회전 (위치 고정)
-				// Charging    → EnterChargingState 시점 방향 고정 (단, 약한 추적) + 직진
-				// Stunned     → 회전·이동 없음 (얼음)
-				// Dead        → 아무것도 안 함
-	
-	// 즉, Idle, Telegraph일 때만 메쉬 회전
-	// Charging 중엔 약하게 추적
-	
-	if (CurrentState != EEnemyState::Idle && 
-		CurrentState != EEnemyState::Telegraph &&
-		CurrentState != EEnemyState::Charging)
-		return;
-	
-	APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (!Player) return;
-	
-	const FVector TargetDirection = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	const FRotator TargetRotator = TargetDirection.Rotation();
-	const FRotator CurrentRotation = GetActorRotation();
-	
-	float EffectiveRotationSpeed ; // 공격 예고 단계에서 플레이어를 더 빠르게 추적
-	
-	if (CurrentState == EEnemyState::Telegraph)
-	{
-		EffectiveRotationSpeed = RotationInterpSpeed * 1.5f;
-	}
-	else if (CurrentState == EEnemyState::Charging)
-	{
-		EffectiveRotationSpeed = 1.0f; // 아주 약하게 추적
-	}
-	else
-	{
-		EffectiveRotationSpeed = RotationInterpSpeed;
-	}
-	
-	const FRotator NewRotation = FMath::RInterpTo(
-		CurrentRotation, 
-		TargetRotator, 
-		DeltaTime, 
-		EffectiveRotationSpeed);
-	
-	if (FVector::DotProduct(GetActorForwardVector(), TargetDirection) > 0.98f)
-	{																			// 거의 목표 방향에 도달하면 보간을 끊고 즉시 정렬
-		SetActorRotation(TargetRotator);										// RInterpTo 특성상 정확히 도달하지 않는데, 저속 회전에서 눈에 띔
-	}
-	else
-	{
-		SetActorRotation(NewRotation);
-	}
+	if (CurrentState == EEnemyState::Telegraph) UpdateTelegraphDecal();
 }
 
 void ABaseEnemy::UpdateTelegraphDecal()
 {
 	if (!TelegraphMID) return;
 	
-	// 70% 기준으로 두 단계
-	// 0.0 ~ 0.7 : 주황색 (경고 단계)
-	// 0.7 ~ 1.0 : 주황 → 빨강으로 부드럽게 변화
-	// LerpUsingHSV(ColorA, ColorB, Alpha)
+																			// 70% 기준으로 두 단계
+																			// 0.0 ~ 0.7 : 주황색 (경고 단계)
+																			// 0.7 ~ 1.0 : 주황 → 빨강으로 부드럽게 변화
+																			// LerpUsingHSV(ColorA, ColorB, Alpha)
 		
 	const float Ratio = GetTelegraphRatio();
 	const FLinearColor Color = (Ratio < 0.7f) 
@@ -324,16 +250,17 @@ void ABaseEnemy::UpdateTelegraphDecal()
 
 void ABaseEnemy::OnDamaged(float Amount, AActor* Causer)
 {
-	/*
-	MarinPlayer->StartDash()
-			└── Enemy->KillInstantly()
-					└── ABaseCreature::ProcessDeath()
-							└── OnDeath() 자동 호출
-									└── ResetEnemyState(Dead)
-	 */
+																			/*
+																			MarinPlayer->StartDash()
+																					└── Enemy->KillInstantly()
+																							└── ABaseCreature::ProcessDeath()
+																									└── OnDeath() 자동 호출
+																											└── ResetEnemyState(Dead)
+																			 */
 }
 
 void ABaseEnemy::OnDeath()
 {
 	ResetEnemyState(EEnemyState::Dead);
+	Super::OnDeath();
 }

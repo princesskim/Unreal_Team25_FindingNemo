@@ -1,6 +1,7 @@
 #include "JellyfishTrapAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 AJellyfishTrapAIController::AJellyfishTrapAIController()
 {
@@ -37,6 +38,21 @@ void AJellyfishTrapAIController::Tick(float DeltaTime)
         {
             GetWorld()->GetTimerManager().ClearTimer(PatrolTimerHandle);
             JellyfishTrapOwner->SetState(EJellyfishTrapState::Chase);
+            DoChase(Player);
+        }
+        else
+        {
+            FVector Dir = (PatrolTargetLocation - JellyfishTrapOwner->GetActorLocation()).GetSafeNormal();
+            float Dist = FVector::Dist(PatrolTargetLocation, JellyfishTrapOwner->GetActorLocation());
+
+            if (Dist > 50.f)
+            {
+                JellyfishTrapOwner->GetMovementComponent()->Velocity = Dir * 300.f;
+            }
+            else
+            {
+                DoPatrol();
+            }
         }
         break;
 
@@ -73,28 +89,25 @@ void AJellyfishTrapAIController::DoPatrol()
 {
     if (!JellyfishTrapOwner) return;
 
-    UNavigationSystemV1* NavSystem =
-        UNavigationSystemV1::GetCurrent(GetWorld());
-    if (!NavSystem) return;
-
-    FNavLocation RandomLocation;
-    NavSystem->GetRandomReachablePointInRadius(
-        JellyfishTrapOwner->SpawnLocation,
-        JellyfishTrapOwner->PatrolRadius,
-        RandomLocation
+    FVector RandomOffset = FVector(
+        FMath::RandRange(-JellyfishTrapOwner->PatrolRadius, JellyfishTrapOwner->PatrolRadius),
+        FMath::RandRange(-JellyfishTrapOwner->PatrolRadius, JellyfishTrapOwner->PatrolRadius),
+        FMath::RandRange(-400.f, 400.f)
     );
 
-    MoveToLocation(RandomLocation.Location);
+    PatrolTargetLocation = JellyfishTrapOwner->SpawnLocation + RandomOffset;
 }
 
 void AJellyfishTrapAIController::DoChase(AActor* Player)
 {
-    MoveToActor(Player);
+    FVector Dir = (Player->GetActorLocation() - JellyfishTrapOwner->GetActorLocation()).GetSafeNormal();
+    JellyfishTrapOwner->GetMovementComponent()->Velocity = Dir * 800.f;
 }
 
 void AJellyfishTrapAIController::DoReturn()
 {
-    MoveToLocation(JellyfishTrapOwner->SpawnLocation);
+    FVector Dir = (JellyfishTrapOwner->SpawnLocation - JellyfishTrapOwner->GetActorLocation()).GetSafeNormal();
+    JellyfishTrapOwner->GetMovementComponent()->Velocity = Dir * 500.f;
 }
 
 AActor* AJellyfishTrapAIController::FindPlayer()
