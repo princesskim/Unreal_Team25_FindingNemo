@@ -44,6 +44,11 @@ void AMarinController::BeginPlay()
 	FString CurrentMapName = GetWorld()->GetMapName();
 	if (CurrentMapName.Contains("MainMenuLevel"))
 	{
+		if (UNemoGameInstance* GI = Cast<UNemoGameInstance>(GetGameInstance()))
+		{
+			GI->ResetGameData();
+		}
+
 		ShowMainMenu(false);
 	}
 }
@@ -107,7 +112,7 @@ void AMarinController::StartGame()
 		NemoGameInstance->TotalScore = 0;
 	}
 	
-	UGameplayStatics::OpenLevel(GetWorld(), FName("TESTMAP"));
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Level_Design_Demo_Map"));
 }
 
 void AMarinController::ShowGameHUD()

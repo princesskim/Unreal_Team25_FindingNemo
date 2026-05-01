@@ -60,7 +60,15 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="Health")
 	float GetHealthPercent() const;						// @서희 : HP Bar에서 게이지 너비 계산에 사용
-
+	
+	// ================ Setter ================
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void SetMaxHP(float NewMaxHP);
+	
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void SetCurrentHP(float NewCurrentHP);
+	
+	
 protected:
 	virtual void BeginPlay() override;
 	

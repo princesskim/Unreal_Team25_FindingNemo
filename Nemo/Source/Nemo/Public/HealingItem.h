@@ -16,9 +16,11 @@ class NEMO_API AHealingItem : public ABaseItem
 
 public:
 	AHealingItem();
+	
+	virtual void BeginPlay() override;
 
 	virtual void ActivateItem(AActor* Activator) override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Heal")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Heal")
 	float HealAmount;
 };
