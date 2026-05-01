@@ -382,7 +382,8 @@ void AMarinPlayer::OnDamaged(float Amount, AActor* Causer)
 	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
 	{
 	
-		PlayerController->UpdateHUDHP(GetCurrentHP(), GetMaxHP());
+		if(Causer != nullptr)
+			PlayerController->UpdateHUDHP(GetCurrentHP(), GetMaxHP());
 	}
 }
 
