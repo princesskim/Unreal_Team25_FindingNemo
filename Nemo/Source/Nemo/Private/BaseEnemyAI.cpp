@@ -38,24 +38,24 @@ void ABaseEnemyAI::Tick(float DeltaSeconds)						// 새 공격 조건 : 대기(I
 {
 	Super::Tick(DeltaSeconds);
 	
-	if (!PossessedEnemy) return;
-	if (bIsAttackBlocked) return;
-	if (PossessedEnemy->GetEnemyState() != EEnemyState::Idle) return;	// 이미 사이클 중
-	if (GetDistanceToPlayer() > PlayerDetectionRadius) return;			// 감지 영역 밖
-	
-	// 새 공격을 위한 조건을 모두 만족한다면 텔레그래프 시작
-	PossessedEnemy->EnterTelegraphState();								// 새 공격 사이클 시작
-	bIsAttackBlocked = true;											// 중복 공격 막는 플래그
-	
-	const float TotalDelay =	PossessedEnemy->GetTelegraphDuration() +
-								PossessedEnemy->GetChargeDuration() + 
-								PossessedEnemy->GetStunDuration() + 
-								AttackCooldownTime;
-	
-	GetWorldTimerManager().SetTimer(
-		AttackCooldownTimerHandle, this,
-		&ABaseEnemyAI::OnCooldownFinished, 
-		TotalDelay, false);
+	// if (!PossessedEnemy) return;
+	// if (bIsAttackBlocked) return;
+	// if (PossessedEnemy->GetEnemyState() != EEnemyState::Idle) return;	// 이미 사이클 중
+	// if (GetDistanceToPlayer() > PlayerDetectionRadius) return;			// 감지 영역 밖
+	//
+	// // 새 공격을 위한 조건을 모두 만족한다면 텔레그래프 시작
+	// //PossessedEnemy->EnterTelegraphState();								// 새 공격 사이클 시작
+	// bIsAttackBlocked = true;											// 중복 공격 막는 플래그
+	//
+	// const float TotalDelay =	PossessedEnemy->GetTelegraphDuration() +
+	// 							PossessedEnemy->GetChargeDuration() + 
+	// 							PossessedEnemy->GetStunDuration() + 
+	// 							AttackCooldownTime;
+	//
+	// GetWorldTimerManager().SetTimer(
+	// 	AttackCooldownTimerHandle, this,
+	// 	&ABaseEnemyAI::OnCooldownFinished, 
+	// 	TotalDelay, false);
 }
 
 void ABaseEnemyAI::OnCooldownFinished()
