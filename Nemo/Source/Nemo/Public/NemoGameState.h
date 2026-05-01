@@ -13,10 +13,13 @@ public:
     ANemoGameState();
     virtual void BeginPlay() override;
 
+    virtual void Tick(float DeltaTime) override;
+
     UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Score")
     int32 Score;
     UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Level")
     float LevelDuration;
+    float ElapsedTime;
     UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Level")
     int32 CurrentLevelIndex;
     UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Level")

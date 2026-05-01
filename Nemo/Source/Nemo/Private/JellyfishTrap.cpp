@@ -1,13 +1,14 @@
 #include "JellyfishTrap.h"
 #include "Kismet/GameplayStatics.h"
+#include "JellyfishTrapAIController.h"
 #include "GameFramework/PawnMovementComponent.h"
 
 AJellyfishTrap::AJellyfishTrap()
 {
     TouchDamage = 15;
-    DetectionRange = 600.0f;
-    ChaseRange = 1200.0f;
-    PatrolRadius = 400.0f;
+    DetectionRange = 1500.0f;
+    ChaseRange = 3000.0f;
+    PatrolRadius = 800.0f;
     CurrentState = EJellyfishTrapState::Patrol;
 
     KnockbackStrength = 500.0f;
@@ -17,8 +18,14 @@ AJellyfishTrap::AJellyfishTrap()
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
     SetRootComponent(CapsuleComponent);
 
+    MeshComp->AttachToComponent(CapsuleComponent,
+        FAttachmentTransformRules::KeepRelativeTransform);
+
     CapsuleComponent->OnComponentBeginOverlap.AddDynamic(
         this, &AJellyfishTrap::OnJellyfishTrapOverlap);
+
+    AIControllerClass = AJellyfishTrapAIController::StaticClass();
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AJellyfishTrap::BeginPlay()
@@ -62,17 +69,15 @@ void AJellyfishTrap::OnDeath()
 
 void AJellyfishTrap::OnDamaged(float Amount, AActor* Causer)
 {
-    // �׽�Ʈ �α�
     GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red,
         FString::Printf(TEXT("JellyfishTrap Hit! Damage: %.1f"), Amount));
-    // ���� ������
+
     StartHitFlash();
 
-    // �˹� : ������ ���⿡�� �з���
     if (Causer)
     {
         FVector KnockbackDir = (GetActorLocation() - Causer->GetActorLocation()).GetSafeNormal();
-        // APawn�� LaunchPawn ��� ���� velocity ����
+       
         if (UPawnMovementComponent* MoveComp = GetMovementComponent())
         {
             MoveComp->Velocity += KnockbackDir * KnockbackStrength;
@@ -84,7 +89,7 @@ void AJellyfishTrap::StartHitFlash()
 {
     if (MeshComp)
     {
-        // ���͸��� �۾� �ʿ�
+        
         MeshComp->SetScalarParameterValueOnMaterials(TEXT("HitFlash"), 1.0f);
     }
 
@@ -97,7 +102,7 @@ void AJellyfishTrap::StartHitFlash()
     );
 }
 
-// �ǰ� ���� �����·� ������
+
 void AJellyfishTrap::EndHitFlash()
 {
     if (MeshComp)

@@ -7,8 +7,10 @@
 #include "NemoHUDWidget.h"
 #include "NemoGameState.h"
 #include "NemoGameInstance.h"
+#include "NemoHUDWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 AMarinController::AMarinController()
       : InputMappingContext(nullptr),
@@ -123,26 +125,28 @@ void AMarinController::ShowGameHUD()
 
 	if (HUDWidgetClass)
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		HUDWidgetInstance = CreateWidget<UNemoHUDWidget>(this, HUDWidgetClass);
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
 			
 			bShowMouseCursor = false;
 			SetInputMode(FInputModeGameOnly());
+
+			HUDWidgetInstance->UpdateHPBar(100.0f, 100.0f);
 			
 			ANemoGameState* NemoGameState = GetWorld() ? GetWorld()->GetGameState<ANemoGameState>() : nullptr;
 			if (NemoGameState)
 			{
 				NemoGameState->UpdateHUD();
 			}
-			
+			SetNarrationTextByStage(1);
 			ShowNarrationPanel();
 		}
 	}
 }
 
-UUserWidget* AMarinController::GetHUDWidget() const
+UNemoHUDWidget* AMarinController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
 }
@@ -188,6 +192,42 @@ void AMarinController::HideNarrationPanel()
 	{
 		Panel->SetRenderOpacity(0.0f);
 	}
+}
+
+void AMarinController::UpdateHUDHP(float CurrentHP, float MaxHP)
+{
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->UpdateHPBar(CurrentHP, MaxHP);
+	}
+}
+
+void AMarinController::SetNarrationTextByStage(int32 Stage)
+{
+	if (!HUDWidgetInstance) return;
+
+	if (UTextBlock* NarrationTextBlock = Cast<UTextBlock>(
+		HUDWidgetInstance->GetWidgetFromName(TEXT("NarrationTextBlock"))))
+	{
+	switch (Stage)
+	{
+	case 1:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 1\n아이들을 찾아가보자")));
+			break;
+
+	case 2:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 2\n지뢰들을 조심하며 나아가자")));
+			break;
+
+	case 3:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 3\n상어를 피해 아이들과 집으로 돌아가자")));
+		break;
+
+	default:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 1\n아이들을 찾아가보자")));
+		break;
+	}
+    }
 }
 
 void AMarinController::ShowLevelClear()

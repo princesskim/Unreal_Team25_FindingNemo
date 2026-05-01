@@ -18,7 +18,7 @@ public:
 
 private:
     AJellyfishTrap* JellyfishTrapOwner;
-
+    FVector PatrolTargetLocation;
     FTimerHandle PatrolTimerHandle;
 
     // 순찰 - SpawnLocation 기준 랜덤 위치로 이동

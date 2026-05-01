@@ -9,6 +9,7 @@
 class UInputMappingContext;
 class UInputAction;
 class UUserWidget;
+class UNemoHUDWidget;
 
 UCLASS()
 class NEMO_API AMarinController : public APlayerController
@@ -48,24 +49,28 @@ public:
 	// ============== HUD 위젯 ==============
 																					// 인게임 중 항상 떠있는 UI (HP바, 비늘 카운터 등)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="HUD")
-	TSubclassOf<UUserWidget> HUDWidgetClass;
+	TSubclassOf<UNemoHUDWidget> HUDWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD")
-	UUserWidget* HUDWidgetInstance;
+	UNemoHUDWidget* HUDWidgetInstance;
 
 	UFUNCTION(BlueprintCallable, Category="HUD")
 	void ShowGameHUD();
 
 	UFUNCTION(BlueprintPure, Category="HUD")
-	UUserWidget* GetHUDWidget() const;
+	UNemoHUDWidget* GetHUDWidget() const;
 
-	void UpdateHUDWidget();
+
+
+
 	
 	FTimerHandle NarrationTimerHandle;
 
 	void ShowNarrationPanel();
 	void HideNarrationPanel();
 	
+	void UpdateHUDHP(float CurrentHP, float MaxHP);
+	void SetNarrationTextByStage(int32 Stage);
 	
 	// ============== 레벨 클리어 위젯 ==============
 																					// 웨이브 클리어 시 표시

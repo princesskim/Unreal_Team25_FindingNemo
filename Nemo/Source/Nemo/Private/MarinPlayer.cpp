@@ -145,6 +145,7 @@ void AMarinPlayer::UpdateOverheadHP()
 		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), GetCurrentHP(), GetMaxHP())));
 		
 	}
+
 }
 
 
@@ -380,8 +381,9 @@ void AMarinPlayer::OnDamaged(float Amount, AActor* Causer)
 	
 	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
 	{
-		// @서희 : 위젯 BP에서 Tick마다 GetHealthPercent() 호출해서 HP바 업데이트
-		// @서희 : 피격 연출
+	
+			PlayerController->UpdateHUDHP(GetCurrentHP(), GetMaxHP());
+		
 	}
 }
 

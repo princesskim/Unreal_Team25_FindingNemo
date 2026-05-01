@@ -55,7 +55,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JellyfishTrap|Combat")
     UParticleSystem* DeathParticle; // »ç¸Á ÆÄÆ¼Å¬
-
+    
     FVector SpawnLocation;
 
     EJellyfishTrapState CurrentState;

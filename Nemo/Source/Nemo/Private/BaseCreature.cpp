@@ -17,10 +17,11 @@ ABaseCreature::ABaseCreature()
 	MovementComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComp"));
 	
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	RootComponent = RootComp;
 	
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComp->SetupAttachment(RootComponent);
+	RootComponent = MeshComp;
+	
+	MeshComp->SetNotifyRigidBodyCollision(true);
 }
 
 
@@ -32,8 +33,6 @@ void ABaseCreature::BeginPlay()
 
 void ABaseCreature::ApplyDamage(float Amount, AActor* Causer)
 {
-	///UE_LOG(LogTemp, Warning, TEXT("ApplyDamage 호출"));
-	
 	if (bIsDead) return;
 	if (Amount < 0.f) return;
 	if (IsDamageImmune()) return;
