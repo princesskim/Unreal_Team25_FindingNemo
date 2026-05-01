@@ -46,7 +46,6 @@ AMarinPlayer::AMarinPlayer()
 	
 	
 	// ============= 컴포넌트 생성 =============
-	MovementComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComp"));
 	MovementComp->MaxSpeed = SwimSpeed;
 	MovementComp->Acceleration = 1200.f;
 	MovementComp->Deceleration = 800.f;
@@ -76,6 +75,7 @@ AMarinPlayer::AMarinPlayer()
 void AMarinPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	SetCurrentHP(MaxHP);
 }
 
 
@@ -376,6 +376,8 @@ float AMarinPlayer::GetSpeedBoostRemainingRatio() const
 
 void AMarinPlayer::OnDamaged(float Amount, AActor* Causer)
 {
+	Super::OnDamaged(Amount, Causer);
+	
 	if (AMarinController* PlayerController = Cast<AMarinController>(GetController()))
 	{
 		// @서희 : 위젯 BP에서 Tick마다 GetHealthPercent() 호출해서 HP바 업데이트

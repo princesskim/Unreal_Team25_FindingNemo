@@ -2,6 +2,7 @@
 
 #include "BaseCreature.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 ABaseCreature::ABaseCreature()
 {
@@ -13,6 +14,8 @@ ABaseCreature::ABaseCreature()
 	bIsDead = false;
 	
 	// ============= 컴포넌트 생성 =============
+	MovementComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComp"));
+	
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = RootComp;
 	
@@ -29,14 +32,18 @@ void ABaseCreature::BeginPlay()
 
 void ABaseCreature::ApplyDamage(float Amount, AActor* Causer)
 {
+	///UE_LOG(LogTemp, Warning, TEXT("ApplyDamage 호출"));
+	
 	if (bIsDead) return;
 	if (Amount < 0.f) return;
 	if (IsDamageImmune()) return;
 	
 	float PrevHP = CurrentHP;
-	CurrentHP = FMath::Clamp(CurrentHP - Amount, 0.f, MaxHP);
-	float ActualDamage = PrevHP - CurrentHP;
+	float NewHP = FMath::Clamp(GetCurrentHP() - Amount, 0.f, MaxHP);
+
+	SetCurrentHP(NewHP);
 	
+	float ActualDamage = PrevHP - CurrentHP;
 	OnDamaged(ActualDamage, Causer);
 }
 
@@ -44,10 +51,8 @@ void ABaseCreature::ApplyHeal(float Amount)
 {
 	if (bIsDead) return;
 	if (Amount < 0.f) return;
-	CurrentHP = FMath::Clamp(CurrentHP + Amount, 0.f, MaxHP);
-	
-	// @서희
-	// HP Bar 업데이트
+	float NewHP = FMath::Clamp(GetCurrentHP() + Amount, 0.f, MaxHP);
+	SetCurrentHP(NewHP);
 }
 
 bool ABaseCreature::IsAlive() const
@@ -82,6 +87,17 @@ float ABaseCreature::GetHealthPercent() const
 	return (MaxHP > 0.f) ? FMath::Clamp(CurrentHP / MaxHP * 100, 0.f, 100.f) : 0;
 }
 
+void ABaseCreature::SetMaxHP(float NewMaxHP)
+{
+	MaxHP = FMath::Max(0.f, NewMaxHP);
+	CurrentHP = FMath::Clamp(CurrentHP, 0.f, MaxHP);
+}
+
+void ABaseCreature::SetCurrentHP(float NewCurrentHP)
+{
+	CurrentHP = FMath::Clamp(NewCurrentHP, 0.f, MaxHP);
+}
+
 void ABaseCreature::ProcessDeath()
 {
 	bIsDead = true;
@@ -94,6 +110,6 @@ void ABaseCreature::OnDeath()
 
 void ABaseCreature::OnDamaged(float Amount, AActor* Causer)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red,
-		FString::Printf(TEXT("Hit! Damage: %.1f"), Amount));
+	UE_LOG(LogTemp, Warning, TEXT("OnDamaged 호출"));
+	UE_LOG(LogTemp, Warning, TEXT("Hit! Damage: %.1f, CurrentHP : %.1f"), Amount, GetCurrentHP());
 }																// 자식 클래스에서 override

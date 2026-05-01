@@ -65,6 +65,7 @@ void ANemoGameState::OnGameOver()
     {
         if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
         {
+            MarinController->ShowLevelClear();
             MarinController->SetPause(true);
         }
     }
@@ -140,6 +141,17 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     }
     else if (CurrentWave == 2)
     {
+
+        // 스테이지 클리어 UI + 다음 스테이지 소개 
+        AMarinController* MarinController = Cast<AMarinController>(
+            UGameplayStatics::GetPlayerController(GetWorld(), 0)
+        );
+
+        if (MarinController)
+        {
+            MarinController->ShowNarrationPanel();
+        }
+
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
         
@@ -152,6 +164,17 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     }
     else if (CurrentWave == 3)
     {
+
+        // 스테이지 클리어 UI + 다음 스테이지 소개 
+        AMarinController* MarinController = Cast<AMarinController>(
+            UGameplayStatics::GetPlayerController(GetWorld(), 0)
+        );
+
+        if (MarinController)
+        {
+            MarinController->ShowNarrationPanel();
+        }
+
         if (BossSharkClass)
         {
             RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
@@ -271,13 +294,13 @@ void ANemoGameState::EndLevel()
 
 void ANemoGameState::UpdateHUD()
 {
+   
 	if (APlayerController* PlayerController =
 		GetWorld()->GetFirstPlayerController())
 	{
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
-
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
                 
@@ -287,23 +310,21 @@ void ANemoGameState::UpdateHUD()
                     float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
                     TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
                 }
-
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
 					(HUDWidget->GetWidgetFromName(TEXT("ScoreText"))))
 				{
 					if (UGameInstance* GameInstance = GetGameInstance())
 					{
 						UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-                      
                         ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), NemoGameInstance->TotalScore)));
 					}
 				}
 
 				if (UTextBlock* LevelIndexText = Cast<UTextBlock>
-					(HUDWidget->GetWidgetFromName(TEXT("wave"))))
+					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("%d"), CurrentWave )));
+					(FString::Printf(TEXT("%d"), CurrentWave + 1)));
 				}
 
                 if (UTextBlock* LevelIndexText = Cast<UTextBlock>

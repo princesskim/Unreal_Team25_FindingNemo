@@ -20,4 +20,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
 	
+	UFUNCTION(BlueprintCallable, Category = "ReGameData")
+	void ResetGameData();
 };

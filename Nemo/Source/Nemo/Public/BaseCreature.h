@@ -20,6 +20,7 @@
 
 class USceneComponent;
 class UStaticMeshComponent;
+class UFloatingPawnMovement;	
 
 UCLASS(Abstract)										// Abstract : 레벨에 직접 배치 불가, 자식 클래스를 통해서만 사용 가능
 class NEMO_API ABaseCreature : public APawn
@@ -59,7 +60,15 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="Health")
 	float GetHealthPercent() const;						// @서희 : HP Bar에서 게이지 너비 계산에 사용
-
+	
+	// ================ Setter ================
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void SetMaxHP(float NewMaxHP);
+	
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void SetCurrentHP(float NewCurrentHP);
+	
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -75,6 +84,8 @@ protected:
 														// AMarinPlayer → 화면 빨간 플래시
 														// ABaseEnemy → ???
 	// ================ 컴포넌트 ================
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UFloatingPawnMovement> MovementComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USceneComponent> RootComp;
