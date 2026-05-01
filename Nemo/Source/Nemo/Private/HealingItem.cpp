@@ -2,6 +2,7 @@
 
 
 #include "HealingItem.h"
+#include "MarinPlayer.h"
 
 AHealingItem::AHealingItem()
 {
@@ -9,17 +10,22 @@ AHealingItem::AHealingItem()
 	HealAmount = 20.0f;
 }
 
+void AHealingItem::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AHealingItem::ActivateItem(AActor* Activator)
 {
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %d HP"),HealAmount));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %.1f HP"),HealAmount));
 		
-
-		//if (Player)
-		//{
-		//	Player->AddHealth(HealAmount);
-		//}
+		if (AMarinPlayer* MarinPlayer = Cast<AMarinPlayer>(Activator))
+		{
+			MarinPlayer->ApplyHeal(HealAmount);
+			UE_LOG(LogTemp, Warning, TEXT("Player Gained %.1f HP, CurrentHP : %.1f"), HealAmount, MarinPlayer->GetCurrentHP());
+		}
 		DestroyItem();
 	}
 }
