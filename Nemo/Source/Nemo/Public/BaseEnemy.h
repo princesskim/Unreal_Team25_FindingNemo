@@ -89,14 +89,17 @@ protected:
     virtual void OnDamaged(float Amount, AActor* Causer) override;		// 경직 중 대시 충돌은 플레이어가 감지하기 때문에 빈 함수임
 																		// 자식에서 override해서 추가 처리 가능
 	void SetState(EEnemyState NewState);
-
-	virtual void CheckChargeOverlap();									// 돌진 중 플레이어 충돌 감지 + 데미지 적용
+	
+	UFUNCTION()
+	virtual void CheckChargeOverlap(
+		UPrimitiveComponent* HitComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, 
+		FVector NormalImpulse, 
+		const FHitResult& Hit);									// 돌진 중 플레이어 충돌 감지 + 데미지 적용
 	
 
-	// ========= Telegraph 데칼 컴포넌트 =========
-	UPROPERTY(VisibleAnywhere, Category="Enemy|Telegraph")
-	TObjectPtr<UDecalComponent> TelegraphDecal;							// 항상 존재하는 컴포넌트가 아니므로 생성자에 작성하지 않음
-	
+	// ========= Telegraph 컴포넌트 =========
 	UPROPERTY(EditDefaultsOnly, Category="Enemy|Telegraph")
 	TObjectPtr<UMaterialInterface> TelegraphMaterial;					// 디테일 패널에서 머티리얼 할당
 	
@@ -138,14 +141,12 @@ protected:
     void ExitChargingState();
 	void ExitStunnedState();
 
-	// ============= Telegraph 타이머 =============
+	// ============= 타이머 =============
 	FTimerHandle TelegraphTimerHandle;
 	FTimerHandle ChargeTimerHandle;
 	FTimerHandle ChargeOverlapTimerHandle;								// 돌진 중 충돌 감지 반복 타이머
-	float TelegraphStartTime;
-	
-    // ============== Stunned 타이머 ==============
     FTimerHandle StunTimerHandle;
+	float TelegraphStartTime;
 	
 private:
     EEnemyState CurrentState;
