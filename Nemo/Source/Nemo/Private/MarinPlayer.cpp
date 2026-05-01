@@ -145,6 +145,7 @@ void AMarinPlayer::UpdateOverheadHP()
 		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), GetCurrentHP(), GetMaxHP())));
 		
 	}
+
 }
 
 
