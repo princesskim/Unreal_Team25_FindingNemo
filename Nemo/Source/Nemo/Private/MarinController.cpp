@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NemoGameState.h"
 #include "NemoGameInstance.h"
+#include "NemoHUDWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -122,13 +123,15 @@ void AMarinController::ShowGameHUD()
 
 	if (HUDWidgetClass)
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		HUDWidgetInstance = CreateWidget<UNemoHUDWidget>(this, HUDWidgetClass);
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
 			
 			bShowMouseCursor = false;
 			SetInputMode(FInputModeGameOnly());
+
+			HUDWidgetInstance->UpdateHPBar(100.0f, 100.0f);
 			
 			ANemoGameState* NemoGameState = GetWorld() ? GetWorld()->GetGameState<ANemoGameState>() : nullptr;
 			if (NemoGameState)
@@ -141,7 +144,7 @@ void AMarinController::ShowGameHUD()
 	}
 }
 
-UUserWidget* AMarinController::GetHUDWidget() const
+UNemoHUDWidget* AMarinController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
 }
@@ -173,6 +176,14 @@ void AMarinController::HideNarrationPanel()
 	if (UWidget* Panel = HUDWidgetInstance->GetWidgetFromName(TEXT("NarrationPanel")))
 	{
 		Panel->SetRenderOpacity(0.0f);
+	}
+}
+
+void AMarinController::UpdateHUDHP(float CurrentHP, float MaxHP)
+{
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->UpdateHPBar(CurrentHP, MaxHP);
 	}
 }
 
