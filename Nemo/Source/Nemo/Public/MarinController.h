@@ -1,4 +1,4 @@
-// MarinController.h
+﻿// MarinController.h
 
 #pragma once
 
@@ -59,6 +59,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="HUD")
 	UNemoHUDWidget* GetHUDWidget() const;
+
+
+
+
 	
 	FTimerHandle NarrationTimerHandle;
 

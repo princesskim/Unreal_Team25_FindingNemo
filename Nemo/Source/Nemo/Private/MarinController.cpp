@@ -1,8 +1,10 @@
-// MarinController.cpp
+﻿// MarinController.cpp
 
 #include "MarinController.h"
+#include "MarinPlayer.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "NemoHUDWidget.h"
 #include "NemoGameState.h"
 #include "NemoGameInstance.h"
 #include "NemoHUDWidget.h"
@@ -148,6 +150,8 @@ UNemoHUDWidget* AMarinController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
 }
+
+
 
 void AMarinController::ShowNarrationPanel()
 {
