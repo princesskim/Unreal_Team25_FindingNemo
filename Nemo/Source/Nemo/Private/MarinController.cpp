@@ -188,13 +188,14 @@ void AMarinController::UpdateHUDHP(float CurrentHP, float MaxHP)
 	if (HUDWidgetInstance)
 	{
 		HUDWidgetInstance->UpdateHPBar(CurrentHP, MaxHP);
+		HUDWidgetInstance->PlayDamageEffect();
 	}
 }
 
 void AMarinController::SetNarrationTextByStage(int32 Stage)
 {
 	if (!HUDWidgetInstance) return;
-
+	//TODO ##블라블라
 	if (UTextBlock* NarrationTextBlock = Cast<UTextBlock>(
 		HUDWidgetInstance->GetWidgetFromName(TEXT("NarrationTextBlock"))))
 	{
