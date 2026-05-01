@@ -10,7 +10,10 @@
 
 ANemoGameState::ANemoGameState()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     Score = 0;
+    ElapsedTime = 0.f;
     LevelDuration = 300.f;
     CurrentLevelIndex = 0;
     MaxLevels = 3;
@@ -40,6 +43,12 @@ void ANemoGameState::BeginPlay()
         0.1f,
         true
     );
+}
+
+void ANemoGameState::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    ElapsedTime += DeltaTime;
 }
 
 int32 ANemoGameState::GetScore() const
@@ -285,8 +294,7 @@ void ANemoGameState::UpdateHUD()
                 if (UTextBlock* TimeText = Cast<UTextBlock>
                     (HUDWidget->GetWidgetFromName(TEXT("Time"))))
                 {
-                    float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), ElapsedTime)));
                 }
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
 					(HUDWidget->GetWidgetFromName(TEXT("ScoreText"))))
@@ -302,7 +310,7 @@ void ANemoGameState::UpdateHUD()
 					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("%d"), CurrentWave + 1)));
+					(FString::Printf(TEXT("%d"), CurrentWave)));
 				}
 
                 if (UTextBlock* LevelIndexText = Cast<UTextBlock>
