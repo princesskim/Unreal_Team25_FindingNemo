@@ -128,6 +128,8 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         ClearWaveActors();
     }
 
+    float SpawnMultipiler = 1.0f + (WaveIndex - 1) * 0.5f;
+
     CurrentWave = WaveIndex;
 
     TArray<AActor*> FoundVolumes;
@@ -139,6 +141,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     if (CurrentWave == 1)
     {
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
 
         TArray<AActor*> SpawnedFish;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
@@ -163,12 +166,14 @@ void ANemoGameState::StartWave(int32 WaveIndex)
             MarinController->ShowNarrationPanel();
         }
 
-        RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
         
         TArray<AActor*> SpawnedFish;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
         BabyFishCount = SpawnedFish.Num();
+        MaxBabyFishCount = SpawnedFish.Num();
 
         GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
             FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
@@ -189,13 +194,14 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 
         if (BossSharkClass)
         {
-            RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
             RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
-            RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Creature, CreatureToSpawn * 2, FoundVolumes);
 
             TArray<AActor*> SpawnedFish;
             UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABabyFish::StaticClass(), SpawnedFish);
             BabyFishCount = SpawnedFish.Num();
+            MaxBabyFishCount = SpawnedFish.Num();
 
             GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
                 FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
