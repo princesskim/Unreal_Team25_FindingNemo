@@ -7,6 +7,7 @@
 #include "NemoGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 AMarinController::AMarinController()
       : InputMappingContext(nullptr),
@@ -134,7 +135,7 @@ void AMarinController::ShowGameHUD()
 			{
 				NemoGameState->UpdateHUD();
 			}
-			
+			SetNarrationTextByStage(1);
 			ShowNarrationPanel();
 		}
 	}
@@ -173,6 +174,34 @@ void AMarinController::HideNarrationPanel()
 	{
 		Panel->SetRenderOpacity(0.0f);
 	}
+}
+
+void AMarinController::SetNarrationTextByStage(int32 Stage)
+{
+	if (!HUDWidgetInstance) return;
+
+	if (UTextBlock* NarrationTextBlock = Cast<UTextBlock>(
+		HUDWidgetInstance->GetWidgetFromName(TEXT("NarrationTextBlock"))))
+	{
+	switch (Stage)
+	{
+	case 1:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 1\n아이들을 찾아가보자")));
+			break;
+
+	case 2:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 2\n지뢰들을 조심하며 나아가자")));
+			break;
+
+	case 3:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 3\n상어를 피해 아이들과 집으로 돌아가자")));
+		break;
+
+	default:
+		NarrationTextBlock->SetText(FText::FromString(TEXT("Stage 1\n아이들을 찾아가보자")));
+		break;
+	}
+    }
 }
 
 void AMarinController::ShowLevelClear()
