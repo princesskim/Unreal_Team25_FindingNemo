@@ -141,6 +141,17 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     }
     else if (CurrentWave == 2)
     {
+
+        // 스테이지 클리어 UI + 다음 스테이지 소개 
+        AMarinController* MarinController = Cast<AMarinController>(
+            UGameplayStatics::GetPlayerController(GetWorld(), 0)
+        );
+
+        if (MarinController)
+        {
+            MarinController->ShowNarrationPanel();
+        }
+
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
         
@@ -153,6 +164,17 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     }
     else if (CurrentWave == 3)
     {
+
+        // 스테이지 클리어 UI + 다음 스테이지 소개 
+        AMarinController* MarinController = Cast<AMarinController>(
+            UGameplayStatics::GetPlayerController(GetWorld(), 0)
+        );
+
+        if (MarinController)
+        {
+            MarinController->ShowNarrationPanel();
+        }
+
         if (BossSharkClass)
         {
             RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
