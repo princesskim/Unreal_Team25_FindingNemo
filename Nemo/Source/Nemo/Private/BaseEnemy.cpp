@@ -1,4 +1,4 @@
-// BaseEnemy.cpp
+﻿// BaseEnemy.cpp
 
 #include "BaseEnemy.h"
 #include "MarinPlayer.h"
@@ -163,7 +163,7 @@ void ABaseEnemy::CheckChargeOverlap(UPrimitiveComponent* HitComponent,
 																				
 	//if (CurrentState != EEnemyState::Charging) return;
 	
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Hit!"));
 	
 	if (AMarinPlayer* Player = Cast<AMarinPlayer>(OtherActor))
 	{
