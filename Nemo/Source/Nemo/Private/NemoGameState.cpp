@@ -302,7 +302,7 @@ void ANemoGameState::UpdateHUD()
 					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("wave: %d"), CurrentWave + 1)));
+					(FString::Printf(TEXT("%d"), CurrentWave + 1)));
 				}
 
                 if (UTextBlock* LevelIndexText = Cast<UTextBlock>
