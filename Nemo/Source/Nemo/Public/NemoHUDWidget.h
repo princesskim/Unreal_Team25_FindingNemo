@@ -16,7 +16,7 @@ class NEMO_API UNemoHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void UpdateHPBar(float HPPercent);
+	void UpdateHPBar(float CurrentHP, float MaxHP);
 
 protected:
 	UPROPERTY(meta = (BindWidget))

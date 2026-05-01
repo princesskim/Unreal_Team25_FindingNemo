@@ -38,7 +38,6 @@ public:
     UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "TIme")
     float TimeDamage;
 
-    float StartTime;
 
     // ================ Wave ================
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")

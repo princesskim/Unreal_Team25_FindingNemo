@@ -151,18 +151,7 @@ UNemoHUDWidget* AMarinController::GetHUDWidget() const
 	return HUDWidgetInstance;
 }
 
-void AMarinController::UpdateHUDWidget()
-{
-	if (UNemoHUDWidget* NemoHUDWidget = Cast<UNemoHUDWidget>(HUDWidgetInstance))
-	{
-		if (AMarinPlayer* TempPlayer = Cast<AMarinPlayer>(GetPawn()))
-		{
-			float CurrentHPPercent = TempPlayer->GetHealthPercent();
-			NemoHUDWidget->UpdateHPBar(CurrentHPPercent);
-		}
-	}
 
-}
 
 void AMarinController::ShowNarrationPanel()
 {
