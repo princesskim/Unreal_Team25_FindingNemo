@@ -14,7 +14,7 @@ ASpikeTrapItem::ASpikeTrapItem()
 // 밟는 순간 CurrentActivator 저장 후 반복 타이머 시작
 void ASpikeTrapItem::ActivateItem(AActor* Activator)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("[SpikeTrap] Stepped / Timer Start"));
+    //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("[SpikeTrap] Stepped / Timer Start"));
     
     CurrentActivator = Activator;
     GetWorld()->GetTimerManager().SetTimer(
@@ -35,7 +35,7 @@ void ASpikeTrapItem::ApplySpikeDamage()
         ABaseCreature* Creature = Cast<ABaseCreature>(CurrentActivator);
         if (Creature)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("[SpikeTrap] Apply Damage: %d"), SpikeDamage));
+            //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("[SpikeTrap] Apply Damage: %d"), SpikeDamage));
 
             Creature->ApplyDamage(SpikeDamage, this);
         }
@@ -52,7 +52,7 @@ void ASpikeTrapItem::OnItemEndOverlap(
 {
     if (OtherActor == CurrentActivator)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("[SpikeTrap] Exit / Timer Stop"));
+        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("[SpikeTrap] Exit / Timer Stop"));
 
         GetWorld()->GetTimerManager().ClearTimer(SpikeDamageTimerHandle);
         CurrentActivator = nullptr;

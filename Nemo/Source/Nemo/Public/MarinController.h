@@ -59,10 +59,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="HUD")
 	UNemoHUDWidget* GetHUDWidget() const;
-
-
-
-
 	
 	FTimerHandle NarrationTimerHandle;
 

@@ -15,7 +15,7 @@ void ABabyFish::ActivateItem(AActor* Activator)
 {
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %f Points"),PointValue));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player Gained %f Points"),PointValue));
 		if (UWorld* World = GetWorld())
 		{
 			if (ANemoGameState* GameState = World->GetGameState<ANemoGameState>())

@@ -17,9 +17,13 @@ class NEMO_API UNemoHUDWidget : public UUserWidget
 
 public:
 	void UpdateHPBar(float CurrentHP, float MaxHP);
+	void PlayDamageEffect();
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HPBar;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* DamageEffectAnim;
 	
 };

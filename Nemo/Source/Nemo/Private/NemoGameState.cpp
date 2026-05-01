@@ -147,8 +147,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     TArray<AActor*> FoundVolumes;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
 
-    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,
-        FString::Printf(TEXT("Wave %d Start!"), CurrentWave));
+    //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Wave %d Start!"), CurrentWave));
 
     if (CurrentWave == 1)
     {
@@ -161,8 +160,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         BabyFishCount = SpawnedFish.Num();
         MaxBabyFishCount = SpawnedFish.Num();
 
-        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
-            FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+        //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
     }
     else if (CurrentWave == 2)
     {
@@ -180,7 +178,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         }
 
         RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
-        RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Item, ItemToSpawn * SpawnMultipiler, FoundVolumes);
         RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
         
         TArray<AActor*> SpawnedFish;
@@ -188,8 +186,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         BabyFishCount = SpawnedFish.Num();
         MaxBabyFishCount = SpawnedFish.Num();
 
-        GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
-            FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+        //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
     }
     else if (CurrentWave == 3)
     {
@@ -209,7 +206,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         {
             RandomSpawn(EActorType::Boss, BossToSpawn, FoundVolumes);
             RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
-            RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Item, ItemToSpawn * SpawnMultipiler, FoundVolumes);
             RandomSpawn(EActorType::Creature, CreatureToSpawn * 2, FoundVolumes);
 
             TArray<AActor*> SpawnedFish;
@@ -217,8 +214,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
             BabyFishCount = SpawnedFish.Num();
             MaxBabyFishCount = SpawnedFish.Num();
 
-            GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
-                FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
+            //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("BabyFish Count: %d"), BabyFishCount));
 
             /*
             FActorSpawnParameters SpawnParams;
@@ -253,8 +249,7 @@ void ANemoGameState::OnBabyFishCollected()
     BabyFishCount--;
     MinBabyFishCount++;
 
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,
-        FString::Printf(TEXT("BabyFish Remaining: %d"), BabyFishCount));
+    //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("BabyFish Remaining: %d"), BabyFishCount));
 
     if (BabyFishCount <= 0)
     {
@@ -264,14 +259,13 @@ void ANemoGameState::OnBabyFishCollected()
 
 void ANemoGameState::OnBossDefeated()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Boss Defeated!"));
+    //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Boss Defeated!"));
     OnWaveClear();
 }
 
 void ANemoGameState::OnWaveClear()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,
-        FString::Printf(TEXT("Wave %d Clear!"), CurrentWave));
+    //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Wave %d Clear!"), CurrentWave));
 
     if (CurrentWave >= MaxWaves)
     {

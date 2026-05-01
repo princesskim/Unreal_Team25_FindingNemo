@@ -93,9 +93,16 @@ void ABaseEnemy::EnterTelegraphState()
 	
 	SetState(EEnemyState::Telegraph);
 	TelegraphStartTime = GetWorld()->GetTimeSeconds();
-		
-	// 여기서 Telegraph 마테리얼 보이게 하기
 	
+	// Emissive true Test
+	/*
+	TelegraphMID = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
+	if (TelegraphMID)
+	{
+		TelegraphMID->SetVectorParameterValue(TEXT("Color"), FLinearColor::Red);
+		TelegraphMID->SetScalarParameterValue(TEXT("Progress"), 1.0f);
+	}
+	*/
 	GetWorldTimerManager().SetTimer(
 		TelegraphTimerHandle,this,
 		&ABaseEnemy::ExitTelegraphState,
@@ -106,7 +113,14 @@ void ABaseEnemy::ExitTelegraphState()
 {
 	if (!IsAlive()) return;
 	
-	// 여기서 Telegraph 마테리얼 끄기
+	// Emissive false Test
+	/*
+	if (TelegraphMID)
+	{
+		TelegraphMID->SetScalarParameterValue(TEXT("Progress"), 0.0f);
+	}
+	*/
+
 	SetState(EEnemyState::Charging);
 	
 	EnterChargingState();														// Charge 상태로 바로 전환
