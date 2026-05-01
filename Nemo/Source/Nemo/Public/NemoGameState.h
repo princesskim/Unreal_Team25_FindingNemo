@@ -77,6 +77,7 @@ public:
     void StartWave(int32 WaveIndex);
     void ApplyTimeDamge();
     void OnWaveClear();
+    void OnGameClear();
     void ClearWaveActors();
     void OnLevelTimeUp();
     void EndLevel();

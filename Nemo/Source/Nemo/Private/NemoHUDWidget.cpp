@@ -28,3 +28,11 @@ void UNemoHUDWidget::PlayDamageEffect()
 		PlayAnimation(DamageEffectAnim);
 	}
 }
+
+void UNemoHUDWidget::PlayHealingEffect()
+{
+	if (HealingEffectAnim)
+	{
+		PlayAnimation(HealingEffectAnim);
+	}
+}

@@ -23,7 +23,7 @@ void AHealingItem::ActivateItem(AActor* Activator)
 		
 		if (AMarinPlayer* MarinPlayer = Cast<AMarinPlayer>(Activator))
 		{
-			MarinPlayer->ApplyHeal(HealAmount);
+			MarinPlayer->ApplyHeal(HealAmount,this);
 			UE_LOG(LogTemp, Warning, TEXT("Player Gained %.1f HP, CurrentHP : %.1f"), HealAmount, MarinPlayer->GetCurrentHP());
 		}
 		DestroyItem();

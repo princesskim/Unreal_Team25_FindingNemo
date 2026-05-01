@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "HealingItem.h"
 
 AMarinController::AMarinController()
       : InputMappingContext(nullptr),
@@ -183,14 +184,30 @@ void AMarinController::HideNarrationPanel()
 	}
 }
 
-void AMarinController::UpdateHUDHP(float CurrentHP, float MaxHP)
+void AMarinController::UpdateHUDHP(float CurrentHP, float MaxHP,AActor* Causer)
 {
 	if (HUDWidgetInstance)
 	{
 		HUDWidgetInstance->UpdateHPBar(CurrentHP, MaxHP);
-		HUDWidgetInstance->PlayDamageEffect();
+		if (Causer != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Causer Type: %s"), *Causer->GetClass()->GetName());
+
+			if (AHealingItem* Heal = Cast<AHealingItem>(Causer))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("HealingItem Detected!"));
+				HUDWidgetInstance->PlayHealingEffect();
+			}
+			else
+			{
+				HUDWidgetInstance->PlayDamageEffect();
+			}
+		}
+
 	}
 }
+
+
 
 void AMarinController::SetNarrationTextByStage(int32 Stage)
 {

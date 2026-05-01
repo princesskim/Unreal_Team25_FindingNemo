@@ -65,7 +65,7 @@ public:
 	void ShowNarrationPanel();
 	void HideNarrationPanel();
 	
-	void UpdateHUDHP(float CurrentHP, float MaxHP);
+	void UpdateHUDHP(float CurrentHP, float MaxHP,AActor* Causer);
 	void SetNarrationTextByStage(int32 Stage);
 	
 	// ============== 레벨 클리어 위젯 ==============

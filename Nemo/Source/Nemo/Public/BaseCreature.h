@@ -1,4 +1,4 @@
-// BaseCreature.h
+﻿// BaseCreature.h
 
 #pragma once
 
@@ -35,7 +35,7 @@ public:
 	void ApplyDamage(float Amount, AActor* Causer);
 	
 	UFUNCTION(BlueprintCallable, Category = "Health")
-	void ApplyHeal(float Amount);
+	void ApplyHeal(float Amount,AActor* Causer);
 	
 	
 	// ================== 상태 ==================

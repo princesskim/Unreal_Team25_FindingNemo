@@ -44,12 +44,18 @@ void ABaseCreature::ApplyDamage(float Amount, AActor* Causer)
 	
 	float ActualDamage = PrevHP - CurrentHP;
 	OnDamaged(ActualDamage, Causer);
+	if (CurrentHP <= 0)
+	{
+		OnDeath();
+	}
 }
 
-void ABaseCreature::ApplyHeal(float Amount)
+void ABaseCreature::ApplyHeal(float Amount,AActor* Causer)
 {
 	if (bIsDead) return;
 	if (Amount < 0.f) return;
+
+	OnDamaged(Amount, Causer);
 	float NewHP = FMath::Clamp(GetCurrentHP() + Amount, 0.f, MaxHP);
 	SetCurrentHP(NewHP);
 }
@@ -109,6 +115,6 @@ void ABaseCreature::OnDeath()
 
 void ABaseCreature::OnDamaged(float Amount, AActor* Causer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnDamaged 호출"));
-	UE_LOG(LogTemp, Warning, TEXT("Hit! Damage: %.1f, CurrentHP : %.1f"), Amount, GetCurrentHP());
+	//UE_LOG(LogTemp, Warning, TEXT("OnDamaged 호출"));
+	//UE_LOG(LogTemp, Warning, TEXT("Hit! Damage: %.1f, CurrentHP : %.1f"), Amount, GetCurrentHP());
 }																// 자식 클래스에서 override

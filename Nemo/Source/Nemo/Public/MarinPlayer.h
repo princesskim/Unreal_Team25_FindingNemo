@@ -27,6 +27,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void OnDamaged(float Amount, AActor* Causer) override;
+
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadWidget;

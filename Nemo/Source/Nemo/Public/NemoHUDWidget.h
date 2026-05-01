@@ -18,6 +18,7 @@ class NEMO_API UNemoHUDWidget : public UUserWidget
 public:
 	void UpdateHPBar(float CurrentHP, float MaxHP);
 	void PlayDamageEffect();
+	void PlayHealingEffect();
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -25,5 +26,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* DamageEffectAnim;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* HealingEffectAnim;
 	
 };

@@ -85,7 +85,7 @@ void ANemoGameState::OnGameOver()
     {
         if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
         {
-            MarinController->ShowLevelClear();
+            MarinController->ShowGameOver();
             MarinController->SetPause(true);
         }
     }
@@ -269,12 +269,24 @@ void ANemoGameState::OnWaveClear()
 
     if (CurrentWave >= MaxWaves)
     {
-        EndLevel();
+        OnGameClear();
         return;
     }
 
     MinBabyFishCount = 0;
     StartWave(CurrentWave + 1);
+}
+
+void ANemoGameState::OnGameClear()
+{
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (AMarinController* MarinController = Cast<AMarinController>(PlayerController))
+        {
+            MarinController->ShowLevelClear();
+            MarinController->SetPause(true);
+        }
+    }
 }
 
 void ANemoGameState::ClearWaveActors()
@@ -316,7 +328,7 @@ void ANemoGameState::EndLevel()
 
     if (CurrentLevelIndex >= MaxLevels)
     {
-        OnGameOver();
+        OnGameClear();
         return;
     }
 
