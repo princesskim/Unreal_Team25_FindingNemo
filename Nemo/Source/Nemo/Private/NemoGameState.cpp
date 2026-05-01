@@ -152,12 +152,14 @@ void ANemoGameState::StartWave(int32 WaveIndex)
     {
 
         // 스테이지 클리어 UI + 다음 스테이지 소개 
+
         AMarinController* MarinController = Cast<AMarinController>(
             UGameplayStatics::GetPlayerController(GetWorld(), 0)
         );
 
         if (MarinController)
         {
+            MarinController->SetNarrationTextByStage(CurrentWave);
             MarinController->ShowNarrationPanel();
         }
 
@@ -181,6 +183,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 
         if (MarinController)
         {
+            MarinController->SetNarrationTextByStage(CurrentWave);
             MarinController->ShowNarrationPanel();
         }
 

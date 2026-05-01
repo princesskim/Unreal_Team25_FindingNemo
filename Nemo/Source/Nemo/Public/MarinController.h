@@ -64,6 +64,7 @@ public:
 	void ShowNarrationPanel();
 	void HideNarrationPanel();
 	
+	void SetNarrationTextByStage(int32 Stage);
 	
 	// ============== 레벨 클리어 위젯 ==============
 																					// 웨이브 클리어 시 표시
