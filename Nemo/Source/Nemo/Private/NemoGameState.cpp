@@ -272,13 +272,13 @@ void ANemoGameState::EndLevel()
 
 void ANemoGameState::UpdateHUD()
 {
+   
 	if (APlayerController* PlayerController =
 		GetWorld()->GetFirstPlayerController())
 	{
 		if (AMarinController* MarinController =
 			Cast<AMarinController>(PlayerController))
 		{
-
 			if (UUserWidget* HUDWidget = MarinController->GetHUDWidget())
 			{
                 
@@ -288,14 +288,12 @@ void ANemoGameState::UpdateHUD()
                     float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
                     TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
                 }
-
 				if (UTextBlock* ScoreText = Cast<UTextBlock>
 					(HUDWidget->GetWidgetFromName(TEXT("ScoreText"))))
 				{
 					if (UGameInstance* GameInstance = GetGameInstance())
 					{
 						UNemoGameInstance* NemoGameInstance = Cast<UNemoGameInstance>(GameInstance);
-                      
                         ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), NemoGameInstance->TotalScore)));
 					}
 				}
@@ -304,7 +302,7 @@ void ANemoGameState::UpdateHUD()
 					(HUDWidget->GetWidgetFromName(TEXT("Stage"))))
 				{
 					LevelIndexText->SetText(FText::FromString
-					(FString::Printf(TEXT("%d"), CurrentWave )));
+					(FString::Printf(TEXT("wave: %d"), CurrentWave + 1)));
 				}
 
                 if (UTextBlock* LevelIndexText = Cast<UTextBlock>
