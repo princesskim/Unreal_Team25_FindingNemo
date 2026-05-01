@@ -20,3 +20,11 @@ void UNemoHUDWidget::UpdateHPBar(float CurrentHP, float MaxHP)
 	HPBar->SetPercent(Percent);
 
 }
+
+void UNemoHUDWidget::PlayDamageEffect()
+{
+	if (DamageEffectAnim)
+	{
+		PlayAnimation(DamageEffectAnim);
+	}
+}
