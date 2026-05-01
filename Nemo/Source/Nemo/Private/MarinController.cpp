@@ -107,7 +107,7 @@ void AMarinController::StartGame()
 		NemoGameInstance->TotalScore = 0;
 	}
 	
-	UGameplayStatics::OpenLevel(GetWorld(), FName("MainLevel"));
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Level_Design_Demo_Map"));
 }
 
 void AMarinController::ShowGameHUD()
