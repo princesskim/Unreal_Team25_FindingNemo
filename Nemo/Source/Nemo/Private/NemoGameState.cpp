@@ -152,6 +152,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 
     if (CurrentWave == 1)
     {
+        UE_LOG(LogTemp, Warning, TEXT("CurrentWave = %d"), CurrentWave);
         RandomSpawn(EActorType::Target, TargetToSpawn, FoundVolumes);
         RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
 
@@ -206,6 +207,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
 
         if (BossSharkClass)
         {
+            RandomSpawn(EActorType::Boss, BossToSpawn, FoundVolumes);
             RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
             RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
             RandomSpawn(EActorType::Creature, CreatureToSpawn * 2, FoundVolumes);

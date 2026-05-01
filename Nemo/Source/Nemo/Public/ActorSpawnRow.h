@@ -15,6 +15,7 @@ enum class EActorType : uint8
 	Item      UMETA(DisplayName = "Item"),    
 	Creature   UMETA(DisplayName = "Creature"), 
 	Target     UMETA(DisplayName = "Target"),   
+	Boss	UMETA(DisplayName = "Boss"),
 	
 };
 

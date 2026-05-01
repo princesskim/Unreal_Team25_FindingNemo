@@ -33,6 +33,9 @@ public:
     UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
     int32 CreatureToSpawn;
 
+    UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Spawn")
+    int32 BossToSpawn;
+
 
     //================ Time ====================
     UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "TIme")
