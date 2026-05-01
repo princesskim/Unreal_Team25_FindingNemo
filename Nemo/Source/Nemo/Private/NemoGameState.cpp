@@ -179,7 +179,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         }
 
         RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
-        RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+        RandomSpawn(EActorType::Item, ItemToSpawn * SpawnMultipiler, FoundVolumes);
         RandomSpawn(EActorType::Creature, CreatureToSpawn, FoundVolumes);
         
         TArray<AActor*> SpawnedFish;
@@ -207,7 +207,7 @@ void ANemoGameState::StartWave(int32 WaveIndex)
         if (BossSharkClass)
         {
             RandomSpawn(EActorType::Target, TargetToSpawn * SpawnMultipiler, FoundVolumes);
-            RandomSpawn(EActorType::Item, ItemToSpawn, FoundVolumes);
+            RandomSpawn(EActorType::Item, ItemToSpawn * SpawnMultipiler, FoundVolumes);
             RandomSpawn(EActorType::Creature, CreatureToSpawn * 2, FoundVolumes);
 
             TArray<AActor*> SpawnedFish;
